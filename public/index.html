@@ -164,7 +164,10 @@
                 </div>
 
                 <section class="report-section">
-                  <div class="report-section-title"><div><span>01</span><h3>Exception details<small>Records that did not meet the control criteria</small></h3></div><button class="table-filter">All ▾</button></div>
+                  <div class="report-section-title">
+                    <div><span>01</span><h3>Exception register<small>Non-compliant accounts with risk ratings</small></h3></div>
+                    <button class="table-filter" id="downloadExceptions">Download CSV ↓</button>
+                  </div>
                   <div class="table-wrap">
                     <table>
                       <thead><tr><th>RECORD</th><th>REFERENCE</th><th>EXCEPTION / CONDITION</th><th>RISK</th></tr></thead>
@@ -188,6 +191,6 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status"></div>
-    <script type="module" src="./app.js?v=20260615-2"></script>
+    <script type="module" src="./app.js?v=20260615-3"></script>
   </body>
 </html>

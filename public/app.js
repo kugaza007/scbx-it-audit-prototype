@@ -1,3 +1,5 @@
+import { buildExceptionCsv } from "./audit-export.js";
+
 const catalog = {
   risk: {
     label: "Risk-based",
@@ -485,6 +487,20 @@ function downloadReport() {
   URL.revokeObjectURL(link.href);
 }
 
+function downloadExceptionRegister() {
+  if (!state.report?.exceptions.length) {
+    showToast("No exceptions are available to download.");
+    return;
+  }
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob(["\uFEFF" + buildExceptionCsv(state.report)], { type: "text/csv;charset=utf-8" }));
+  link.download = `SCBX_Exception_Register_${state.topic}_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showToast("Exception register downloaded.");
+}
+
 $$(".approach-card").forEach((card) => card.addEventListener("click", () => chooseApproach(card.dataset.approach)));
 $$("[data-back]").forEach((button) => button.addEventListener("click", () => goToStep(Number(button.dataset.back))));
 $$(".blueprint-tabs button").forEach((button) => button.addEventListener("click", () => { state.tab = button.dataset.tab; renderBlueprint(); }));
@@ -498,6 +514,7 @@ $("#analyzeButton").addEventListener("click", analyzeRecords);
 $("#newAuditButton").addEventListener("click", resetAudit);
 $("#resetAnalysis").addEventListener("click", resetAnalysis);
 $("#downloadReport").addEventListener("click", downloadReport);
+$("#downloadExceptions").addEventListener("click", downloadExceptionRegister);
 $("#recommendButton")?.addEventListener("click", () => { showToast("Risk-based is recommended for exploring priority risks."); setTimeout(() => chooseApproach("risk"), 650); });
 $("#copyNarrative").addEventListener("click", async () => {
   await navigator.clipboard.writeText(state.report?.narrative || "");
