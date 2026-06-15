@@ -1,0 +1,7 @@
+.git
+.gitignore
+*.zip
+README.md
+run.ps1
+node_modules
+npm-debug.log

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SCBX intelligent IT internal audit workspace." />
+    <title>SCBX | IT Audit Intelligence</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#" aria-label="SCBX home">
+          <span class="brand-mark">S</span>
+          <span><strong>SCBX</strong><small>Audit intelligence</small></span>
+        </a>
+
+        <button class="new-audit" id="newAuditButton">
+          <span>＋</span>
+          New Audit
+        </button>
+
+        <nav class="side-nav" aria-label="Main Menu">
+          <a class="active" href="#"><span class="nav-icon">⌂</span> Home </a>
+          <a href="#recent"><span class="nav-icon">◷</span> Recent Audits</a>
+          <a href="#framework"><span class="nav-icon">▣</span> Library </a>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <div class="profile">
+          <div class="avatar">CW</div>
+          <div><strong>Chavakorn W.</strong><small>IT Audit Intern</small></div>
+          <button aria-label="Settings">•••</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open Menu">☰</button>
+          <div>
+            <p class="eyebrow">SMART AUDIT WORKSPACE</p>
+            <h1 id="pageTitle">New Audit</h1>
+          </div>
+        </header>
+
+        <section class="workspace">
+          <div class="stepper" aria-label="Audit workflow">
+            <button class="step active" data-step="1"><span>1</span><div><small>STEP 01</small><strong>Choose approach</strong></div></button>
+            <div class="step-line"></div>
+            <button class="step" data-step="2"><span>2</span><div><small>STEP 02</small><strong>Define scope</strong></div></button>
+            <div class="step-line"></div>
+            <button class="step" data-step="3"><span>3</span><div><small>STEP 03</small><strong>Prepare data</strong></div></button>
+            <div class="step-line"></div>
+            <button class="step" data-step="4"><span>4</span><div><small>STEP 04</small><strong>Analyze results</strong></div></button>
+          </div>
+
+          <div id="stageContainer">
+            <section class="stage-panel active" data-stage="1">
+              <div class="hero-copy">
+                <span class="section-kicker">LET'S GET STARTED</span>
+                <h2>How would you like to<br /><em>approach this audit?</em></h2>
+                <p>Choose the approach that matches your objective. SCBX Audit Intelligence will prepare the right procedures and evidence requirements.</p>
+              </div>
+              <div class="approach-grid">
+                <button class="approach-card" data-approach="risk">
+                  <span class="card-number">01</span>
+                  <span class="approach-icon coral">↗</span>
+                  <h3>Risk-based</h3>
+                  <p>Start with the organization's key risks and focus on areas with the greatest potential impact.</p>
+                  <span class="tag-row"><i>Strategic</i><i>Impact-driven</i></span>
+                  <span class="card-cta">Choose this approach <b>→</b></span>
+                </button>
+                <button class="approach-card" data-approach="compliance">
+                  <span class="card-number">02</span>
+                  <span class="approach-icon violet">◇</span>
+                  <h3>Compliance-based</h3>
+                  <p>Start with regulatory requirements and standards to assess control compliance and completeness.</p>
+                  <span class="tag-row"><i>Regulatory</i><i>Control-focused</i></span>
+                  <span class="card-cta">Choose this approach <b>→</b></span>
+                </button>
+              </div>
+              </section>
+
+            <section class="stage-panel" data-stage="2">
+              <div class="stage-heading">
+                <div><span class="section-kicker" id="stage2Kicker">RISK-BASED APPROACH</span><h2 id="stage2Title">Choose an audit topic</h2><p id="stage2Description">Select a topic to view its scope, evidence requirements, and recommended procedures.</p></div>
+                <button class="text-button" data-back="1">← Change approach</button>
+              </div>
+              <div class="selection-grid" id="selectionGrid"></div>
+            </section>
+
+            <section class="stage-panel" data-stage="3">
+              <div class="stage-heading">
+                <div><span class="section-kicker">AUDIT BLUEPRINT</span><h2 id="blueprintTitle">Audit blueprint</h2><p>Review the plan below before importing your evidence.</p></div>
+                <button class="text-button" data-back="2">← Change topic</button>
+              </div>
+              <div class="blueprint-meta">
+                <div><small>Approach</small><strong id="metaApproach">Risk-based</strong></div>
+                <div><small>Topic</small><strong id="metaTopic">Access Control</strong></div>
+                <div><small>Status</small><strong class="ready-text">Ready to begin</strong></div>
+              </div>
+              <div class="blueprint-layout">
+                <div class="blueprint-tabs" role="tablist">
+                  <button class="active" data-tab="inputs"><span>01</span><div><strong>Required inputs</strong><small>Evidence you will need</small></div></button>
+                  <button data-tab="procedures"><span>02</span><div><strong>Audit procedures</strong><small>How the audit will run</small></div></button>
+                  <button data-tab="outputs"><span>03</span><div><strong>Expected outputs</strong><small>What you will receive</small></div></button>
+                </div>
+                <div class="blueprint-content" id="blueprintContent"></div>
+              </div>
+              <div class="stage-actions"><button class="primary-button" id="continueToUpload">Import evidence <span>→</span></button></div>
+            </section>
+
+            <section class="stage-panel" data-stage="4">
+              <div class="stage-heading">
+                <div><span class="section-kicker">EVIDENCE ANALYSIS</span><h2>Import evidence and analyze results</h2><p>Upload a CSV file with column headers. Every record will be tested against the selected criteria.</p></div>
+                <button class="text-button" data-back="3">← View audit blueprint</button>
+              </div>
+
+              <div class="analysis-grid" id="uploadSection">
+                <div class="upload-card">
+                  <div class="dropzone" id="dropzone">
+                    <input type="file" id="fileInput" accept=".csv,text/csv" hidden />
+                    <div class="upload-icon">↑</div>
+                    <h3>Drop your evidence file here</h3>
+                    <p>or drag and drop a CSV file</p>
+                    <button class="secondary-button" id="chooseFile">Choose a file</button>
+                    <small>Maximum file size: 10 MB</small>
+                  </div>
+                  <div class="file-ready" id="fileReady" hidden>
+                    <span class="file-type">CSV</span>
+                    <div><strong id="fileName">evidence.csv</strong><small id="fileMeta">0 KB · Ready to analyze</small></div>
+                    <button id="removeFile" aria-label="Remove file">×</button>
+                  </div>
+                </div>
+                <aside class="analysis-aside">
+                  <span class="mini-kicker">QUICK START</span>
+                  <h3>Want to try it first?</h3>
+                  <p>Use a 12-record sample dataset to preview the analysis and report.</p>
+                  <button class="demo-button" id="useDemo">Use sample data <span>↗</span></button>
+                  <div class="tip"><span>i</span><p><strong>Your data stays private</strong>This prototype processes files in your browser and does not retain them.</p></div>
+                </aside>
+              </div>
+              <div class="analyze-bar" id="analyzeBar" hidden>
+                <div><small>Ready to analyze</small><strong id="recordCount">0 Records</strong></div>
+                <button class="primary-button" id="analyzeButton">Analyze evidence <span>✦</span></button>
+              </div>
+
+              <div class="loading-state" id="loadingState" hidden>
+                <div class="loader-ring"></div>
+                <h3>Reviewing your evidence</h3>
+                <p id="loadingText">Checking data completeness...</p>
+              </div>
+
+              <div class="report" id="report" hidden>
+                <div class="report-header">
+                  <div><span class="section-kicker">AUDIT RESULT</span><h2><span id="reportTopic"></span> audit results</h2><p id="reportTime"></p></div>
+                  <div class="report-actions"><button class="secondary-button" id="resetAnalysis">Run another analysis</button><button class="primary-button" id="downloadReport">Download report ↓</button></div>
+                </div>
+                <div class="summary-grid">
+                  <article class="summary-card dark"><small>TOTAL RECORDS</small><strong id="totalRecords">0</strong><span>Complete audit population</span></article>
+                  <article class="summary-card success"><small>PASSED</small><strong id="passedRecords">0</strong><span>Met the control criteria</span></article>
+                  <article class="summary-card warning"><small>EXCEPTIONS</small><strong id="exceptionRecords">0</strong><span>Records requiring follow-up</span></article>
+                  <article class="rate-card">
+                    <div class="rate-ring" id="rateRing"><div><strong id="passRate">0%</strong><small>Pass rate</small></div></div>
+                    <p><strong>Control health</strong><span id="healthLabel">Assessing</span></p>
+                  </article>
+                </div>
+
+                <section class="report-section">
+                  <div class="report-section-title"><div><span>01</span><h3>Exception details<small>Records that did not meet the control criteria</small></h3></div><button class="table-filter">All ▾</button></div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>RECORD</th><th>REFERENCE</th><th>EXCEPTION / CONDITION</th><th>RISK</th></tr></thead>
+                      <tbody id="exceptionTable"></tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="report-section narrative-section">
+                  <div class="report-section-title"><div><span>02</span><h3>Auditor narrative<small>Draft finding ready for auditor review</small></h3></div><button class="copy-button" id="copyNarrative">Copy narrative</button></div>
+                  <div class="narrative-box">
+                    <span class="quote-mark">“</span>
+                    <p id="narrativeText"></p>
+                  </div>
+                  <div class="criteria-note"><strong>Assessment criteria</strong><p id="criteriaText"></p></div>
+                </section>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
