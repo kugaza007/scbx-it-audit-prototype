@@ -220,8 +220,19 @@ button { color: inherit; }
 .summary-card strong { margin: 12px 0 4px; font: 700 34px Manrope, sans-serif; }
 .summary-card span { margin-top: auto; color: rgba(255,255,255,.75); font-size: 9px; }
 .rate-card { display: flex; align-items: center; gap: 16px; border: 1px solid var(--line); background: #fff; }
-.rate-ring { display: grid; place-items: center; width: 94px; height: 94px; flex: 0 0 94px; border-radius: 50%; background: conic-gradient(var(--green) 0deg, var(--green) 0deg, #eeece7 0deg); }
-.rate-ring:before { content: ""; position: absolute; width: 72px; height: 72px; border-radius: 50%; background: #fff; }
+.rate-ring {
+  --progress: 0%;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 94px;
+  height: 94px;
+  flex: 0 0 94px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: conic-gradient(var(--green) 0 var(--progress), #eeece7 var(--progress) 100%);
+}
+.rate-ring:before { content: ""; position: absolute; inset: 11px; border-radius: 50%; background: #fff; }
 .rate-ring div { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
 .rate-ring strong { font: 700 18px Manrope, sans-serif; }
 .rate-ring small { color: #9297a0; font-size: 8px; }

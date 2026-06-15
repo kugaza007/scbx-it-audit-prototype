@@ -436,7 +436,7 @@ function renderReport() {
   $("#passedRecords").textContent = report.summary.passed.toLocaleString("en-US");
   $("#exceptionRecords").textContent = report.summary.exceptions.toLocaleString("en-US");
   $("#passRate").textContent = `${report.summary.passRate}%`;
-  $("#rateRing").style.background = `conic-gradient(var(--green) ${report.summary.passRate * 3.6}deg, #eeece7 0deg)`;
+  $("#rateRing").style.setProperty("--progress", `${report.summary.passRate}%`);
   $("#healthLabel").textContent = report.summary.passRate >= 90 ? "Healthy" : report.summary.passRate >= 70 ? "Monitor" : "Needs improvement";
   $("#healthLabel").style.color = report.summary.passRate >= 90 ? "var(--green)" : report.summary.passRate >= 70 ? "var(--yellow)" : "var(--coral)";
   $("#exceptionTable").innerHTML = report.exceptions.length
