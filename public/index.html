@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SCBX intelligent IT internal audit workspace." />
     <title>SCBX | IT Audit Intelligence</title>
-    <link rel="stylesheet" href="./styles.css?v=20260618-2" />
+    <link rel="stylesheet" href="./styles.css?v=20260618-3" />
   </head>
   <body>
     <div class="app-shell">
@@ -103,6 +103,19 @@
                 <div><small>Topic</small><strong id="metaTopic">Access Control</strong></div>
                 <div><small>Status</small><strong class="ready-text">Ready to begin</strong></div>
               </div>
+              <section class="regulation-upload" id="customRegulationPanel" hidden>
+                <div>
+                  <span class="mini-kicker">CUSTOM REGULATION</span>
+                  <h3>Upload regulation / standard</h3>
+                  <p>Upload TXT, MD, CSV, or LOG files for automatic requirement extraction. PDF files can be attached as source references for auditor review.</p>
+                </div>
+                <input type="file" id="regulationInput" accept=".txt,.md,.csv,.log,.pdf,text/plain,text/markdown,text/csv,application/pdf" hidden>
+                <div class="regulation-actions">
+                  <button class="secondary-button" id="chooseRegulation" type="button">Upload regulation</button>
+                  <button class="text-button" id="removeRegulation" type="button" hidden>Remove upload</button>
+                  <small id="regulationStatus">Using the selected standard library.</small>
+                </div>
+              </section>
               <div class="blueprint-layout">
                 <div class="blueprint-tabs" role="tablist">
                   <button class="active" data-tab="inputs"><span>01</span><div><strong>Required inputs</strong><small>Evidence you will need</small></div></button>
@@ -270,6 +283,6 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status"></div>
-    <script type="module" src="./app.js?v=20260618-3"></script>
+    <script type="module" src="./app.js?v=20260618-4"></script>
   </body>
 </html>

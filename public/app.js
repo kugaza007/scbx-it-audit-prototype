@@ -39,6 +39,7 @@ const catalog = {
       { id: "bot", topic: "access", icon: "B", title: "BOT Requirements", description: "BOT regulatory requirements such as IT risk governance and control expectations." },
       { id: "internal-security", topic: "access", icon: "I", title: "Internal IT Security Standards", description: "Internal security baseline and control requirements." },
       { id: "other-policy", topic: "configuration", icon: "O", title: "Other Internal Policies / Baselines", description: "Policy, procedure, and baseline requirements selected by the auditor." },
+      { id: "custom-regulation", topic: "access", icon: "U", title: "Upload Regulation / Standard", description: "Upload a regulation, policy, or baseline and let the workspace decompose assessable requirements." },
     ],
   },
 };
@@ -290,6 +291,17 @@ const requirementLibrary = {
       procedures: ["Decompose policy requirement", "Map expected evidence", "Identify control gaps"],
     },
   ],
+  "custom-regulation": [
+    {
+      requirement: "Upload a regulation file to generate requirement mapping",
+      reference: "CUSTOM-REG",
+      source: "Custom Regulation Upload",
+      topic: "To be mapped",
+      objective: "Prepare a user-provided regulation, standard, policy, or baseline for compliance assessment.",
+      evidence: "Uploaded regulation file and related audit evidence",
+      procedures: ["Upload custom regulation file", "Review extracted requirements", "Map evidence to uploaded requirements"],
+    },
+  ],
 };
 
 const demoRecords = {
@@ -467,7 +479,7 @@ function analyzeLocally(records, topic, standard) {
 }
 
 function buildComplianceMatrix(exceptions, rule, framework) {
-  const requirements = requirementLibrary[state.selection?.id] || requirementLibrary.scbx;
+  const requirements = getComplianceRequirements();
   const hasTerminated = exceptions.some((item) => /terminated|resigned/i.test(item.issue));
   const hasApprovalGap = exceptions.some((item) => /approval|privilege|excessive/i.test(item.issue));
   const hasDormant = exceptions.some((item) => /dormant|inactive|stale/i.test(item.issue));
@@ -493,10 +505,14 @@ function buildComplianceMatrix(exceptions, rule, framework) {
   });
 }
 
+function getComplianceRequirements() {
+  if (state.customRegulation?.requirements?.length) return state.customRegulation.requirements;
+  return requirementLibrary[state.selection?.id] || requirementLibrary.scbx;
+}
+
 function getActiveReferences(topic = state.topic) {
   if (state.approach === "compliance") {
-    const requirements = requirementLibrary[state.selection?.id] || requirementLibrary.scbx;
-    return requirements.map((item) => ({
+    return getComplianceRequirements().map((item) => ({
       reference: item.reference,
       source: item.source,
       requirement: item.requirement,
@@ -515,7 +531,7 @@ function getActiveProcedures() {
   });
 }
 
-const state = { step: 1, approach: null, selection: null, topic: null, standard: null, tab: "inputs", records: [], report: null };
+const state = { step: 1, approach: null, selection: null, topic: null, standard: null, customRegulation: null, tab: "inputs", records: [], report: null };
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 
@@ -538,6 +554,7 @@ function chooseApproach(approach) {
   state.selection = null;
   state.topic = null;
   state.standard = null;
+  state.customRegulation = null;
   const group = catalog[approach];
   $("#stage2Kicker").textContent = group.kicker;
   $("#stage2Title").textContent = group.title;
@@ -559,6 +576,7 @@ function chooseSelection(id) {
   state.selection = item;
   state.topic = item.topic || item.id;
   state.standard = state.approach === "compliance" ? item.title : null;
+  state.customRegulation = null;
   $("#blueprintKicker").textContent = state.approach === "compliance" ? "REQUIREMENTS BREAKDOWN" : "AUDIT BLUEPRINT";
   $("#blueprintTitle").textContent = state.approach === "compliance" ? `${item.title} requirements breakdown` : `${item.title} audit blueprint`;
   $("#blueprintLead").textContent = state.approach === "compliance"
@@ -572,14 +590,140 @@ function chooseSelection(id) {
   goToStep(3);
 }
 
+function renderRegulationPanel() {
+  const panel = $("#customRegulationPanel");
+  if (!panel) return;
+  panel.hidden = state.approach !== "compliance";
+  if (state.approach !== "compliance") return;
+
+  const status = $("#regulationStatus");
+  const removeButton = $("#removeRegulation");
+  removeButton.hidden = !state.customRegulation;
+  if (state.customRegulation) {
+    const count = state.customRegulation.requirements.length;
+    status.textContent = `${state.customRegulation.name} loaded with ${count} extracted requirement${count === 1 ? "" : "s"}.`;
+    return;
+  }
+  status.textContent = state.selection?.id === "custom-regulation"
+    ? "Upload a regulation to replace the placeholder mapping."
+    : "Using the selected standard library. Upload a regulation to override it.";
+}
+
+async function handleRegulationFile(file) {
+  if (!file) return;
+  const extension = file.name.split(".").pop().toLowerCase();
+  const isPdf = extension === "pdf" || file.type === "application/pdf";
+  const readableTypes = ["txt", "md", "csv", "log"];
+
+  if (!isPdf && !readableTypes.includes(extension) && !file.type.startsWith("text/")) {
+    showToast("Please upload TXT, MD, CSV, LOG, or PDF regulation files.");
+    $("#regulationInput").value = "";
+    return;
+  }
+
+  let text = "";
+  if (!isPdf) text = await file.text();
+  const requirements = extractCustomRequirements(text, file.name, isPdf);
+  state.customRegulation = {
+    name: file.name,
+    type: isPdf ? "PDF source reference" : "Extracted text regulation",
+    requirements,
+  };
+  state.standard = file.name;
+  $("#metaTopic").textContent = `${state.selection?.title || "Compliance"} · ${file.name}`;
+  renderBlueprint();
+  renderRunPreview();
+  showToast(isPdf ? "PDF attached as regulation source reference." : "Regulation requirements extracted.");
+}
+
+function extractCustomRequirements(text, fileName, isPdf = false) {
+  const source = `Uploaded Regulation: ${fileName}`;
+  const selectedTopic = auditRules[state.topic]?.title || state.selection?.title || "Compliance Assessment";
+  const defaultProcedures = [
+    "Map uploaded requirement to expected control and evidence",
+    "Review evidence against uploaded requirement",
+    "Document compliance gaps or insufficient evidence",
+  ];
+
+  if (isPdf) {
+    return [
+      "Requirements from the uploaded PDF must be reviewed and mapped to relevant controls.",
+      "Evidence must be collected to demonstrate compliance with the uploaded regulation.",
+      "Gaps must be documented where evidence is insufficient or control operation is not aligned.",
+    ].map((requirement, index) => ({
+      requirement,
+      reference: `CUSTOM-PDF-${String(index + 1).padStart(2, "0")}`,
+      source,
+      topic: selectedTopic,
+      objective: "Use the uploaded PDF as the criteria source for auditor-led requirement mapping.",
+      evidence: "Uploaded PDF regulation, control evidence, testing records",
+      procedures: defaultProcedures,
+    }));
+  }
+
+  const keywordPattern = /(must|shall|required|requirement|policy|standard|control|ensure|review|approve|monitor|retain|ต้อง|ควร|ให้|กำหนด|ควบคุม|อนุมัติ|ติดตาม|จัดเก็บ)/i;
+  const numberedPattern = /^(\d+(\.\d+)*|[a-z]\)|\([a-z]\)|[-*])\s+/i;
+  const lineCandidates = text
+    .replace(/\r/g, "\n")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter((line) => line.length >= 24 && line.length <= 260)
+    .filter((line) => keywordPattern.test(line) || numberedPattern.test(line));
+
+  const sentenceCandidates = text
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?。])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length >= 30 && sentence.length <= 260 && keywordPattern.test(sentence));
+
+  const seen = new Set();
+  const candidates = [...lineCandidates, ...sentenceCandidates]
+    .map((item) => item.replace(numberedPattern, "").trim())
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 12);
+
+  const requirements = candidates.length ? candidates : [
+    "Uploaded regulation must be mapped to relevant controls and supporting audit evidence.",
+    "Compliance evidence must be sufficient to demonstrate control design and operating effectiveness.",
+    "Exceptions must be documented when evidence is missing, incomplete, or not aligned with the regulation.",
+  ];
+
+  return requirements.map((requirement, index) => ({
+    requirement,
+    reference: `CUSTOM-REG-${String(index + 1).padStart(2, "0")}`,
+    source,
+    topic: selectedTopic,
+    objective: "Assess compliance against a user-uploaded regulation or standard.",
+    evidence: "Uploaded regulation, control evidence, system reports, approval records",
+    procedures: defaultProcedures,
+  }));
+}
+
+function removeCustomRegulation() {
+  state.customRegulation = null;
+  state.standard = state.approach === "compliance" ? state.selection?.title : null;
+  $("#regulationInput").value = "";
+  $("#metaTopic").textContent = state.selection?.title || "Compliance";
+  renderBlueprint();
+  renderRunPreview();
+  showToast("Uploaded regulation removed.");
+}
+
 function renderBlueprint() {
   const blueprint = blueprints[state.topic] || blueprints.access;
+  renderRegulationPanel();
   $(".blueprint-layout").classList.toggle("matrix-mode", state.approach === "compliance");
   if (state.approach === "compliance") {
-    const requirements = requirementLibrary[state.selection.id] || requirementLibrary.scbx;
+    const requirements = getComplianceRequirements();
+    const sourceLabel = state.customRegulation ? `Uploaded source: ${state.customRegulation.name}` : "Selected standard library";
     $("#blueprintContent").innerHTML = `
       <h3>Requirement-to-control mapping</h3>
-      <p>AI decomposes the selected standard into assessable requirements and maps each one to audit topic, evidence, and executable procedures.</p>
+      <p>AI decomposes the selected standard into assessable requirements and maps each one to audit topic, evidence, and executable procedures. ${escapeHtml(sourceLabel)}.</p>
       <div class="table-wrap">
         <table class="mapping-table">
           <thead><tr><th>REFERENCE</th><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>MAPPED PROCEDURES</th></tr></thead>
@@ -620,7 +764,7 @@ function renderBlueprint() {
 
 function renderRunPreview() {
   const blueprint = blueprints[state.topic] || blueprints.access;
-  const title = state.selection?.title || auditRules[state.topic]?.title || "Access Control";
+  const title = state.customRegulation?.name || state.selection?.title || auditRules[state.topic]?.title || "Access Control";
   const mode = catalog[state.approach]?.label || "Risk-based";
   $("#runKicker").textContent = state.approach === "compliance" ? "UPLOAD COMPLIANCE EVIDENCE" : "UPLOAD AUDIT DATA FILES";
   $("#runTitle").textContent = state.approach === "compliance" ? "Upload compliance evidence and run assessment" : "Upload audit data files";
@@ -762,9 +906,14 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[character]));
 }
 
+function safeFilePart(value) {
+  return String(value || "assessment").replace(/[^a-z0-9ก-๙_-]+/gi, "_").replace(/^_+|_+$/g, "").slice(0, 60) || "assessment";
+}
+
 function resetAudit() {
-  Object.assign(state, { step: 1, approach: null, selection: null, topic: null, standard: null, tab: "inputs", records: [], report: null });
+  Object.assign(state, { step: 1, approach: null, selection: null, topic: null, standard: null, customRegulation: null, tab: "inputs", records: [], report: null });
   clearFile();
+  $("#regulationInput").value = "";
   $("#report").hidden = true;
   $("#uploadSection").hidden = false;
   goToStep(1);
@@ -793,7 +942,8 @@ function downloadReport() {
   const referenceRows = report.references.map((item) => `${item.reference},${item.source},"${item.requirement.replaceAll('"', '""')}"`).join("\n");
   const matrixRows = report.complianceMatrix?.map((item) => `${item.reference},${item.source},${item.requirement},${item.topic},"${item.evidence.replaceAll('"', '""')}",${item.status},"${item.gap.replaceAll('"', '""')}"`).join("\n") || "";
   const matrixSection = matrixRows ? `\n\nCOMPLIANCE MATRIX\nReference,Source,Requirement,Audit Topic,Evidence,Status,Gap / Observation\n${matrixRows}` : "";
-  const text = `SCBX IT AUDIT WORKPAPER DRAFT\n\nMode: ${catalog[state.approach]?.label || "Risk-based"}\nTopic / Standard: ${state.selection?.title || report.topic}\nTotal Records: ${report.summary.total}\nPassed: ${report.summary.passed}\nExceptions: ${report.summary.exceptions}\nPass Rate: ${report.summary.passRate}%\n\nTESTING REFERENCES\nReference,Source,Criteria / Requirement\n${referenceRows}\n\nAUDITOR NARRATIVE\n${report.narrative}\n\nEXCEPTIONS\nRow,Reference,Criteria Reference,Issue,Risk\n${rows}${matrixSection}\n\nHUMAN REVIEW NOTE\nThis is a draft generated for auditor review, challenge, override, and finalization.`;
+  const topicOrStandard = state.customRegulation?.name || state.selection?.title || report.topic;
+  const text = `SCBX IT AUDIT WORKPAPER DRAFT\n\nMode: ${catalog[state.approach]?.label || "Risk-based"}\nTopic / Standard: ${topicOrStandard}\nTotal Records: ${report.summary.total}\nPassed: ${report.summary.passed}\nExceptions: ${report.summary.exceptions}\nPass Rate: ${report.summary.passRate}%\n\nTESTING REFERENCES\nReference,Source,Criteria / Requirement\n${referenceRows}\n\nAUDITOR NARRATIVE\n${report.narrative}\n\nEXCEPTIONS\nRow,Reference,Criteria Reference,Issue,Risk\n${rows}${matrixSection}\n\nHUMAN REVIEW NOTE\nThis is a draft generated for auditor review, challenge, override, and finalization.`;
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob(["\uFEFF" + text], { type: "text/plain;charset=utf-8" }));
   link.download = `SCBX_Audit_Workpaper_${new Date().toISOString().slice(0, 10)}.txt`;
@@ -832,7 +982,7 @@ function downloadComplianceMatrix() {
   }
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob(["\uFEFF" + buildComplianceCsv(state.report)], { type: "text/csv;charset=utf-8" }));
-  link.download = `SCBX_Compliance_Matrix_${state.selection?.id || "assessment"}_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `SCBX_Compliance_Matrix_${safeFilePart(state.customRegulation?.name || state.selection?.id)}_${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(link.href);
   showToast("Compliance matrix downloaded.");
@@ -843,6 +993,9 @@ $$("[data-back]").forEach((button) => button.addEventListener("click", () => goT
 $$(".blueprint-tabs button").forEach((button) => button.addEventListener("click", () => { state.tab = button.dataset.tab; renderBlueprint(); }));
 $$(".step").forEach((button) => button.addEventListener("click", () => { const target = Number(button.dataset.step); if (target < state.step) goToStep(target); }));
 $("#continueToUpload").addEventListener("click", () => { renderRunPreview(); goToStep(4); });
+$("#chooseRegulation").addEventListener("click", () => $("#regulationInput").click());
+$("#regulationInput").addEventListener("change", (event) => handleRegulationFile(event.target.files[0]));
+$("#removeRegulation").addEventListener("click", removeCustomRegulation);
 $("#chooseFile").addEventListener("click", () => $("#fileInput").click());
 $("#fileInput").addEventListener("change", (event) => handleFile(event.target.files[0]));
 $("#removeFile").addEventListener("click", clearFile);

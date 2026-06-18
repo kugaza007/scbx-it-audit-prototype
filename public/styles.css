@@ -149,6 +149,17 @@ button { color: inherit; }
 .blueprint-meta small { color: #9399a3; font-size: 9px; }
 .blueprint-meta strong { font-size: 12px; }
 .ready-text { color: var(--green); }
+.regulation-upload {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center;
+  margin: -7px 0 22px; padding: 18px 20px; border: 1px solid #dfe7f1; border-radius: 16px;
+  background: linear-gradient(135deg, #fff 0%, #f6f8fb 100%); box-shadow: 0 12px 30px rgba(18, 24, 35, .05);
+}
+.regulation-upload[hidden] { display: none; }
+.regulation-upload h3 { margin: 5px 0 5px; font-size: 14px; }
+.regulation-upload p { max-width: 640px; margin: 0; color: var(--muted); font-size: 10px; line-height: 1.65; }
+.mini-kicker { color: var(--coral); font: 800 8px Manrope, sans-serif; letter-spacing: .12em; }
+.regulation-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; }
+.regulation-actions small { flex-basis: 100%; color: #7d8794; font-size: 9px; text-align: right; }
 .blueprint-layout { min-height: 350px; display: grid; grid-template-columns: 255px 1fr; overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
 .blueprint-layout.matrix-mode { display: block; }
 .blueprint-layout.matrix-mode .blueprint-tabs { display: none; }
@@ -353,6 +364,9 @@ td:first-child, td:nth-child(2) { color: var(--ink); font-family: Manrope, sans-
   .stage-heading, .report-header { flex-direction: column; align-items: flex-start; }
   .blueprint-meta { grid-template-columns: 1fr; }
   .blueprint-meta div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .regulation-upload { grid-template-columns: 1fr; }
+  .regulation-actions { justify-content: flex-start; }
+  .regulation-actions small { text-align: left; }
   .blueprint-layout { grid-template-columns: 1fr; }
   .blueprint-tabs { display: flex; overflow-x: auto; }
   .blueprint-tabs button { min-width: 185px; }
