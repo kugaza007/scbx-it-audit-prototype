@@ -1,4 +1,4 @@
-import { buildExceptionCsv } from "./audit-export.js";
+import { buildExceptionCsv } from "./audit-export.js?v=20260618-2";
 
 const catalog = {
   risk: {
@@ -135,10 +135,36 @@ const blueprints = {
   },
 };
 
+const controlReferences = {
+  access: [
+    { source: "SCBX Group Standards", reference: "SCBX-AC-01", requirement: "User access must be approved, appropriate, and removed promptly when no longer required." },
+    { source: "BOT Requirements", reference: "BOT-IT-AC-01", requirement: "Access rights for critical systems must be controlled in line with risk and business need." },
+    { source: "ISO/IEC 27001:2022", reference: "A.5.15 / A.5.18", requirement: "Access control and access rights must be managed throughout the user lifecycle." },
+  ],
+  configuration: [
+    { source: "SCBX Group Standards", reference: "SCBX-CM-01", requirement: "System configuration and production changes must be approved, tested, and traceable." },
+    { source: "ISO/IEC 27001:2022", reference: "A.8.9 / A.8.32", requirement: "Configuration management and change management controls must be defined and operated." },
+  ],
+  backup: [
+    { source: "SCBX Group Standards", reference: "SCBX-BC-02", requirement: "Critical data must be backed up and restoration must be tested periodically." },
+    { source: "ISO/IEC 27001:2022", reference: "A.8.13", requirement: "Information, software, and systems must be backed up and tested regularly." },
+  ],
+  patch: [
+    { source: "SCBX Group Standards", reference: "SCBX-VM-01", requirement: "Vulnerabilities must be remediated within risk-based service levels." },
+    { source: "CIS Controls v8", reference: "Control 7", requirement: "Continuous vulnerability management must identify and remediate weaknesses." },
+  ],
+  incident: [
+    { source: "SCBX Group Standards", reference: "SCBX-IR-01", requirement: "Security and IT incidents must be logged, escalated, resolved, and supported by root-cause analysis." },
+    { source: "ISO/IEC 27001:2022", reference: "A.5.24 / A.5.26", requirement: "Information security incidents must be planned for, responded to, and learned from." },
+  ],
+};
+
 const requirementLibrary = {
   scbx: [
     {
       requirement: "Access control must be appropriately managed",
+      reference: "SCBX-AC-01",
+      source: "SCBX Group Standards",
       topic: "Access Control",
       objective: "Ensure user access is authorized, appropriate, and removed when no longer required.",
       evidence: "User listings, HR active employee listing, access logs",
@@ -146,6 +172,8 @@ const requirementLibrary = {
     },
     {
       requirement: "Privileged access must be approved and periodically reviewed",
+      reference: "SCBX-AC-02",
+      source: "SCBX Group Standards",
       topic: "Access Control",
       objective: "Ensure privileged accounts are justified, approved, and monitored.",
       evidence: "Privileged access list, approval evidence, periodic access review evidence",
@@ -153,6 +181,8 @@ const requirementLibrary = {
     },
     {
       requirement: "Security events must be logged and monitored",
+      reference: "SCBX-LOG-01",
+      source: "SCBX Group Standards",
       topic: "Logging",
       objective: "Ensure access activities and exceptions can be traced and investigated.",
       evidence: "Access logs, security monitoring alerts, log retention configuration",
@@ -162,6 +192,8 @@ const requirementLibrary = {
   bot: [
     {
       requirement: "IT access rights must be controlled in line with risk and business need",
+      reference: "BOT-IT-AC-01",
+      source: "BOT Requirements",
       topic: "Access Control",
       objective: "Assess whether account provisioning, review, and removal are operating effectively.",
       evidence: "User access listing, HR records, access approval, access review evidence",
@@ -169,6 +201,8 @@ const requirementLibrary = {
     },
     {
       requirement: "Critical IT controls must have sufficient evidence for regulatory assessment",
+      reference: "BOT-IT-GOV-02",
+      source: "BOT Requirements",
       topic: "Information Security",
       objective: "Confirm that evidence supports control design and operating effectiveness.",
       evidence: "Policy documents, procedures, testing records, exception logs",
@@ -178,6 +212,8 @@ const requirementLibrary = {
   "internal-security": [
     {
       requirement: "User accounts must be traceable to a valid employee or approved service owner",
+      reference: "INT-SEC-AC-01",
+      source: "Internal IT Security Standards",
       topic: "Access Control",
       objective: "Ensure every active account has an accountable owner.",
       evidence: "User access listing, employee listing, service account register",
@@ -185,6 +221,8 @@ const requirementLibrary = {
     },
     {
       requirement: "Access changes must retain approval evidence",
+      reference: "INT-SEC-AC-02",
+      source: "Internal IT Security Standards",
       topic: "Change Management",
       objective: "Ensure access granting and changes are authorized before use.",
       evidence: "Access approval, ticket records, authority matrix",
@@ -194,6 +232,8 @@ const requirementLibrary = {
   "other-policy": [
     {
       requirement: "Controls must align with the selected internal policy or baseline",
+      reference: "POLICY-BASELINE-01",
+      source: "Other Internal Policies / Baselines",
       topic: "System Configuration",
       objective: "Assess control operation against the selected policy requirement.",
       evidence: "Policy, procedure, configuration baseline, testing evidence",
@@ -336,6 +376,8 @@ function recordValue(record, keys) {
 
 function analyzeLocally(records, topic, standard) {
   const rule = auditRules[topic] || auditRules.access;
+  const references = getActiveReferences(topic);
+  const criteriaReference = references.map((item) => item.reference).join("; ");
   const exceptions = [];
   records.forEach((record, index) => {
     const issues = rule.check(record);
@@ -343,6 +385,7 @@ function analyzeLocally(records, topic, standard) {
     exceptions.push({
       row: index + 1,
       reference: record.id || record.user_id || record.asset_id || record.ticket_id || `REC-${String(index + 1).padStart(3, "0")}`,
+      criteriaReference,
       issue: issues.join("; "),
       risk: issues.some((issue) => /Critical|terminated|failed/i.test(issue)) ? "High" : "Medium",
       record,
@@ -368,6 +411,7 @@ function analyzeLocally(records, topic, standard) {
     summary: { total, passed, exceptions: exceptionCount, passRate },
     exceptions,
     complianceMatrix,
+    references,
     narrative,
   };
 }
@@ -388,6 +432,8 @@ function buildComplianceMatrix(exceptions, rule, framework) {
       ? "No exception noted from the sample evidence."
       : `${framework} requirement needs follow-up because ${gapSignals.join(", ") || "supporting evidence was not complete"}.`;
     return {
+      reference: requirement.reference,
+      source: requirement.source,
       requirement: requirement.requirement,
       topic: requirement.topic || rule.title,
       evidence: requirement.evidence,
@@ -395,6 +441,18 @@ function buildComplianceMatrix(exceptions, rule, framework) {
       gap,
     };
   });
+}
+
+function getActiveReferences(topic = state.topic) {
+  if (state.approach === "compliance") {
+    const requirements = requirementLibrary[state.selection?.id] || requirementLibrary.scbx;
+    return requirements.map((item) => ({
+      reference: item.reference,
+      source: item.source,
+      requirement: item.requirement,
+    }));
+  }
+  return controlReferences[topic] || controlReferences.access;
 }
 
 const state = { step: 1, approach: null, selection: null, topic: null, standard: null, tab: "inputs", records: [], report: null };
@@ -464,10 +522,11 @@ function renderBlueprint() {
       <p>AI decomposes the selected standard into assessable requirements and maps each one to audit topic, evidence, and executable procedures.</p>
       <div class="table-wrap">
         <table class="mapping-table">
-          <thead><tr><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>MAPPED PROCEDURES</th></tr></thead>
+          <thead><tr><th>REFERENCE</th><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>MAPPED PROCEDURES</th></tr></thead>
           <tbody>
             ${requirements.map((item) => `
               <tr>
+                <td><span class="reference-chip">${escapeHtml(item.reference)}</span><small>${escapeHtml(item.source)}</small></td>
                 <td><strong>${escapeHtml(item.requirement)}</strong><small>${escapeHtml(item.objective)}</small></td>
                 <td>${escapeHtml(item.topic)}</td>
                 <td>${escapeHtml(item.evidence)}</td>
@@ -484,10 +543,15 @@ function renderBlueprint() {
     inputs: ["Evidence to prepare", "These items support a complete analysis and reduce follow-up requests."],
     procedures: ["Audit procedures", "The evidence will be assessed using the following sequence."],
     outputs: ["Expected deliverables", "Outputs are structured for the working paper and audit report."],
+    references: ["Testing references", "References used as the criteria basis for this assessment."],
   };
   const [title, description] = headings[state.tab];
   if (state.tab === "procedures") {
     $("#blueprintContent").innerHTML = `<h3>${title}</h3><p>${description}</p><ol class="procedure-list">${blueprint.procedures.map(([name, detail]) => `<li><strong>${name}</strong>${detail}</li>`).join("")}</ol>`;
+    return;
+  }
+  if (state.tab === "references") {
+    $("#blueprintContent").innerHTML = `<h3>${title}</h3><p>${description}</p><ul class="reference-list">${getActiveReferences().map((item) => `<li><span class="reference-chip">${escapeHtml(item.reference)}</span><div><strong>${escapeHtml(item.source)}</strong><small>${escapeHtml(item.requirement)}</small></div></li>`).join("")}</ul>`;
     return;
   }
   $("#blueprintContent").innerHTML = `<h3>${title}</h3><p>${description}</p><ul class="check-list">${blueprint[state.tab].map(([name, detail, format]) => `<li><span>✓</span><div><strong>${name}</strong><small>${detail}</small></div><i>${format}</i></li>`).join("")}</ul>`;
@@ -508,6 +572,7 @@ function renderRunPreview() {
   const requirements = state.approach === "compliance" ? (requirementLibrary[state.selection?.id] || requirementLibrary.scbx) : null;
   const procedures = requirements ? requirements.flatMap((requirement) => requirement.procedures).slice(0, 5) : blueprint.procedures.map(([name]) => name);
   $("#runProcedureList").innerHTML = procedures.map((procedure) => `<li>${escapeHtml(procedure)}</li>`).join("");
+  $("#runReferenceList").innerHTML = getActiveReferences().map((item) => `<li><span class="reference-chip">${escapeHtml(item.reference)}</span><strong>${escapeHtml(item.source)}</strong><small>${escapeHtml(item.requirement)}</small></li>`).join("");
   $$(".compliance-only").forEach((item) => item.hidden = state.approach !== "compliance");
 }
 
@@ -604,13 +669,22 @@ function renderReport() {
   $("#healthLabel").textContent = report.summary.passRate >= 90 ? "Healthy" : report.summary.passRate >= 70 ? "Monitor" : "Needs improvement";
   $("#healthLabel").style.color = report.summary.passRate >= 90 ? "var(--green)" : report.summary.passRate >= 70 ? "var(--yellow)" : "var(--coral)";
   $("#exceptionTable").innerHTML = report.exceptions.length
-    ? report.exceptions.map((item) => `<tr><td>#${String(item.row).padStart(3, "0")}</td><td>${escapeHtml(item.reference)}</td><td>${escapeHtml(item.issue)}</td><td><span class="risk-badge ${item.risk.toLowerCase()}">${item.risk}</span></td></tr>`).join("")
-    : `<tr><td class="empty-table" colspan="4">No exceptions were identified in the tested records.</td></tr>`;
+    ? report.exceptions.map((item) => `<tr><td>#${String(item.row).padStart(3, "0")}</td><td>${escapeHtml(item.reference)}</td><td>${escapeHtml(item.criteriaReference)}</td><td>${escapeHtml(item.issue)}</td><td><span class="risk-badge ${item.risk.toLowerCase()}">${item.risk}</span></td></tr>`).join("")
+    : `<tr><td class="empty-table" colspan="5">No exceptions were identified in the tested records.</td></tr>`;
+  $("#testingReferenceTable").innerHTML = report.references.map((item) => `
+    <tr>
+      <td><span class="reference-chip">${escapeHtml(item.reference)}</span></td>
+      <td>${escapeHtml(item.source)}</td>
+      <td>${escapeHtml(item.requirement)}</td>
+    </tr>
+  `).join("");
   $("#complianceMatrixSection").hidden = !isCompliance;
-  $("#narrativeIndex").textContent = isCompliance ? "03" : "02";
+  $("#referenceIndex").textContent = "02";
+  $("#narrativeIndex").textContent = isCompliance ? "04" : "03";
   if (isCompliance) {
     $("#complianceTable").innerHTML = report.complianceMatrix.map((item) => `
       <tr>
+        <td><span class="reference-chip">${escapeHtml(item.reference)}</span><small>${escapeHtml(item.source)}</small></td>
         <td>${escapeHtml(item.requirement)}</td>
         <td>${escapeHtml(item.topic)}</td>
         <td>${escapeHtml(item.evidence)}</td>
@@ -655,10 +729,11 @@ function showToast(message) {
 function downloadReport() {
   if (!state.report) return;
   const report = state.report;
-  const rows = report.exceptions.map((item) => `${item.row},${item.reference},"${item.issue.replaceAll('"', '""')}",${item.risk}`).join("\n");
-  const matrixRows = report.complianceMatrix?.map((item) => `${item.requirement},${item.topic},"${item.evidence.replaceAll('"', '""')}",${item.status},"${item.gap.replaceAll('"', '""')}"`).join("\n") || "";
-  const matrixSection = matrixRows ? `\n\nCOMPLIANCE MATRIX\nRequirement,Audit Topic,Evidence,Status,Gap / Observation\n${matrixRows}` : "";
-  const text = `SCBX IT AUDIT WORKPAPER DRAFT\n\nMode: ${catalog[state.approach]?.label || "Risk-based"}\nTopic / Standard: ${state.selection?.title || report.topic}\nTotal Records: ${report.summary.total}\nPassed: ${report.summary.passed}\nExceptions: ${report.summary.exceptions}\nPass Rate: ${report.summary.passRate}%\n\nAUDITOR NARRATIVE\n${report.narrative}\n\nEXCEPTIONS\nRow,Reference,Issue,Risk\n${rows}${matrixSection}\n\nHUMAN REVIEW NOTE\nThis is a draft generated for auditor review, challenge, override, and finalization.`;
+  const rows = report.exceptions.map((item) => `${item.row},${item.reference},${item.criteriaReference},"${item.issue.replaceAll('"', '""')}",${item.risk}`).join("\n");
+  const referenceRows = report.references.map((item) => `${item.reference},${item.source},"${item.requirement.replaceAll('"', '""')}"`).join("\n");
+  const matrixRows = report.complianceMatrix?.map((item) => `${item.reference},${item.source},${item.requirement},${item.topic},"${item.evidence.replaceAll('"', '""')}",${item.status},"${item.gap.replaceAll('"', '""')}"`).join("\n") || "";
+  const matrixSection = matrixRows ? `\n\nCOMPLIANCE MATRIX\nReference,Source,Requirement,Audit Topic,Evidence,Status,Gap / Observation\n${matrixRows}` : "";
+  const text = `SCBX IT AUDIT WORKPAPER DRAFT\n\nMode: ${catalog[state.approach]?.label || "Risk-based"}\nTopic / Standard: ${state.selection?.title || report.topic}\nTotal Records: ${report.summary.total}\nPassed: ${report.summary.passed}\nExceptions: ${report.summary.exceptions}\nPass Rate: ${report.summary.passRate}%\n\nTESTING REFERENCES\nReference,Source,Criteria / Requirement\n${referenceRows}\n\nAUDITOR NARRATIVE\n${report.narrative}\n\nEXCEPTIONS\nRow,Reference,Criteria Reference,Issue,Risk\n${rows}${matrixSection}\n\nHUMAN REVIEW NOTE\nThis is a draft generated for auditor review, challenge, override, and finalization.`;
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob(["\uFEFF" + text], { type: "text/plain;charset=utf-8" }));
   link.download = `SCBX_Audit_Workpaper_${new Date().toISOString().slice(0, 10)}.txt`;
@@ -681,8 +756,8 @@ function downloadExceptionRegister() {
 }
 
 function buildComplianceCsv(report) {
-  const headers = ["Requirement", "Audit Topic", "Evidence", "Status", "Gap / Observation"];
-  const rows = report.complianceMatrix.map((item) => [item.requirement, item.topic, item.evidence, item.status, item.gap]);
+  const headers = ["Reference", "Source", "Requirement", "Audit Topic", "Evidence", "Status", "Gap / Observation"];
+  const rows = report.complianceMatrix.map((item) => [item.reference, item.source, item.requirement, item.topic, item.evidence, item.status, item.gap]);
   return [headers, ...rows].map((row) => row.map((value) => {
     let text = String(value ?? "");
     if (/^[=+\-@]/.test(text)) text = `'${text}`;

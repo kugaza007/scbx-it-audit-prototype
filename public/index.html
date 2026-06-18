@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SCBX intelligent IT internal audit workspace." />
     <title>SCBX | IT Audit Intelligence</title>
-    <link rel="stylesheet" href="./styles.css?v=20260618-1" />
+    <link rel="stylesheet" href="./styles.css?v=20260618-2" />
   </head>
   <body>
     <div class="app-shell">
@@ -108,6 +108,7 @@
                   <button class="active" data-tab="inputs"><span>01</span><div><strong>Required inputs</strong><small>Evidence you will need</small></div></button>
                   <button data-tab="procedures"><span>02</span><div><strong>Audit procedures</strong><small>How the audit will run</small></div></button>
                   <button data-tab="outputs"><span>03</span><div><strong>Expected outputs</strong><small>What you will receive</small></div></button>
+                  <button data-tab="references"><span>04</span><div><strong>References</strong><small>Criteria used for testing</small></div></button>
                 </div>
                 <div class="blueprint-content" id="blueprintContent"></div>
               </div>
@@ -149,6 +150,14 @@
                   <label class="compliance-only"><input type="checkbox" checked /> Compliance matrix</label>
                 </section>
               </div>
+
+              <section class="reference-panel" id="runReferencePanel">
+                <div>
+                  <span class="mini-kicker">TESTING REFERENCES</span>
+                  <h3>Reference criteria used for this assessment</h3>
+                </div>
+                <ul id="runReferenceList"></ul>
+              </section>
 
               <div class="analysis-grid" id="uploadSection">
                 <div class="upload-card">
@@ -209,20 +218,32 @@
                   </div>
                   <div class="table-wrap">
                     <table>
-                      <thead><tr><th>RECORD</th><th>REFERENCE</th><th>EXCEPTION / CONDITION</th><th>RISK</th></tr></thead>
+                      <thead><tr><th>RECORD</th><th>REFERENCE</th><th>CRITERIA REF</th><th>EXCEPTION / CONDITION</th><th>RISK</th></tr></thead>
                       <tbody id="exceptionTable"></tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <section class="report-section" id="testingReferenceSection">
+                  <div class="report-section-title">
+                    <div><span id="referenceIndex">02</span><h3>Testing references<small>Criteria and sources applied during assessment</small></h3></div>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>REFERENCE</th><th>SOURCE</th><th>CRITERIA / REQUIREMENT</th></tr></thead>
+                      <tbody id="testingReferenceTable"></tbody>
                     </table>
                   </div>
                 </section>
 
                 <section class="report-section" id="complianceMatrixSection" hidden>
                   <div class="report-section-title">
-                    <div><span>02</span><h3>Compliance matrix<small>Requirement-by-requirement assessment</small></h3></div>
+                    <div><span>03</span><h3>Compliance matrix<small>Requirement-by-requirement assessment</small></h3></div>
                     <button class="table-filter" id="downloadComplianceMatrix">Download CSV ↓</button>
                   </div>
                   <div class="table-wrap">
                     <table>
-                      <thead><tr><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>STATUS</th><th>GAP / OBSERVATION</th></tr></thead>
+                      <thead><tr><th>REFERENCE</th><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>STATUS</th><th>GAP / OBSERVATION</th></tr></thead>
                       <tbody id="complianceTable"></tbody>
                     </table>
                   </div>
@@ -249,6 +270,6 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status"></div>
-    <script type="module" src="./app.js?v=20260618-1"></script>
+    <script type="module" src="./app.js?v=20260618-2"></script>
   </body>
 </html>
