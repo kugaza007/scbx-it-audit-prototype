@@ -4,27 +4,41 @@ const catalog = {
   risk: {
     label: "Risk-based",
     kicker: "RISK-BASED APPROACH",
-    title: "Which risk area would you like to explore?",
-    description: "Choose a topic aligned with the risk universe or the organization's current priorities.",
+    title: "Select Audit Topic",
+    description: "Choose the audit topic you would like to assess.",
     items: [
+      { id: "governance", topic: "configuration", icon: "G", title: "IT Governance", description: "Review IT governance, accountability, and oversight practices." },
+      { id: "risk-management", topic: "configuration", icon: "R", title: "IT Risk Management", description: "Assess risk identification, assessment, treatment, and monitoring." },
+      { id: "asset", topic: "configuration", icon: "A", title: "IT Asset Management", description: "Verify completeness and ownership of technology assets." },
+      { id: "security", topic: "access", icon: "S", title: "Information Security", description: "Assess the security control environment across key domains." },
       { id: "access", icon: "◎", title: "Access Control", description: "Assess the user access lifecycle and the risk of unauthorized access." },
+      { id: "physical", topic: "access", icon: "P", title: "Physical and Environmental Security", description: "Review physical access, environmental safeguards, and monitoring." },
+      { id: "communications", topic: "configuration", icon: "C", title: "Communications Security", description: "Assess network security, transmission controls, and connectivity risk." },
+      { id: "change", topic: "configuration", icon: "C", title: "Change Management", description: "Review approvals, testing, and deployment controls for changes." },
       { id: "configuration", icon: "⌘", title: "System Configuration", description: "Review configuration changes and secure baseline controls." },
-      { id: "backup", icon: "↻", title: "Data Backup", description: "Confirm backup reliability and the ability to restore critical data." },
       { id: "patch", icon: "⬡", title: "Patch Management", description: "Track vulnerabilities and patch deployment against risk-based SLAs." },
+      { id: "logging", topic: "incident", icon: "L", title: "Logging", description: "Assess log coverage, retention, and monitoring readiness." },
+      { id: "capacity", topic: "backup", icon: "C", title: "Capacity Management", description: "Assess capacity monitoring, thresholds, and service continuity risk." },
+      { id: "monitoring", topic: "incident", icon: "M", title: "Security Monitoring", description: "Review alert monitoring, triage, and escalation controls." },
+      { id: "vulnerability", topic: "patch", icon: "V", title: "Vulnerability Management and Penetration Test", description: "Assess vulnerability identification, remediation, and retesting." },
+      { id: "backup", icon: "↻", title: "Data Backup", description: "Confirm backup reliability and the ability to restore critical data." },
+      { id: "endpoint", topic: "patch", icon: "E", title: "Endpoint Security", description: "Assess endpoint protection and hardening controls." },
+      { id: "development", topic: "configuration", icon: "D", title: "System Acquisition and Development", description: "Review SDLC, testing, and secure development controls." },
       { id: "incident", icon: "!", title: "Incident Management", description: "Assess incident response, escalation, and lessons learned." },
+      { id: "third-party", topic: "incident", icon: "T", title: "Third Party Risk Management", description: "Assess outsourced service and vendor technology risk controls." },
+      { id: "project", topic: "configuration", icon: "J", title: "IT Project Management", description: "Review project governance, delivery risk, and implementation controls." },
     ],
   },
   compliance: {
     label: "Compliance-based",
     kicker: "COMPLIANCE-BASED APPROACH",
-    title: "Choose a framework to assess",
-    description: "The workspace will organize relevant controls and evidence around the selected framework.",
+    title: "Select Regulation / Standard",
+    description: "Choose the regulation, internal standard, or policy requirement to assess.",
     items: [
       { id: "scbx", topic: "access", icon: "S", title: "SCBX Group Standards", description: "Internal standards for technology risk, cybersecurity, and data governance." },
-      { id: "bot", topic: "configuration", icon: "B", title: "BOT Notification", description: "Bank of Thailand requirements for IT risk governance in financial institutions." },
-      { id: "pdpa", topic: "access", icon: "P", title: "PDPA", description: "Assess personal data controls and data subject rights." },
-      { id: "iso", topic: "patch", icon: "I", title: "ISO/IEC 27001", description: "Assess the information security management system and Annex A controls." },
-      { id: "nist", topic: "incident", icon: "N", title: "NIST CSF", description: "Review Govern, Identify, Protect, Detect, Respond, and Recover capabilities." },
+      { id: "bot", topic: "access", icon: "B", title: "BOT Requirements", description: "BOT regulatory requirements such as IT risk governance and control expectations." },
+      { id: "internal-security", topic: "access", icon: "I", title: "Internal IT Security Standards", description: "Internal security baseline and control requirements." },
+      { id: "other-policy", topic: "configuration", icon: "O", title: "Other Internal Policies / Baselines", description: "Policy, procedure, and baseline requirements selected by the auditor." },
     ],
   },
 };
@@ -119,6 +133,73 @@ const blueprints = {
       ["Auditor narrative", "Draft incident-response finding", "TEXT"],
     ],
   },
+};
+
+const requirementLibrary = {
+  scbx: [
+    {
+      requirement: "Access control must be appropriately managed",
+      topic: "Access Control",
+      objective: "Ensure user access is authorized, appropriate, and removed when no longer required.",
+      evidence: "User listings, HR active employee listing, access logs",
+      procedures: ["Review user access appropriateness", "Verify access removal for terminated employees", "Identify excessive access privileges"],
+    },
+    {
+      requirement: "Privileged access must be approved and periodically reviewed",
+      topic: "Access Control",
+      objective: "Ensure privileged accounts are justified, approved, and monitored.",
+      evidence: "Privileged access list, approval evidence, periodic access review evidence",
+      procedures: ["Identify privileged users", "Verify approval evidence", "Check review completeness"],
+    },
+    {
+      requirement: "Security events must be logged and monitored",
+      topic: "Logging",
+      objective: "Ensure access activities and exceptions can be traced and investigated.",
+      evidence: "Access logs, security monitoring alerts, log retention configuration",
+      procedures: ["Review log coverage", "Check monitoring evidence", "Assess retention alignment"],
+    },
+  ],
+  bot: [
+    {
+      requirement: "IT access rights must be controlled in line with risk and business need",
+      topic: "Access Control",
+      objective: "Assess whether account provisioning, review, and removal are operating effectively.",
+      evidence: "User access listing, HR records, access approval, access review evidence",
+      procedures: ["Test terminated user access", "Review approval evidence", "Identify dormant or excessive access"],
+    },
+    {
+      requirement: "Critical IT controls must have sufficient evidence for regulatory assessment",
+      topic: "Information Security",
+      objective: "Confirm that evidence supports control design and operating effectiveness.",
+      evidence: "Policy documents, procedures, testing records, exception logs",
+      procedures: ["Map evidence to requirement", "Identify insufficient evidence", "Summarize compliance gaps"],
+    },
+  ],
+  "internal-security": [
+    {
+      requirement: "User accounts must be traceable to a valid employee or approved service owner",
+      topic: "Access Control",
+      objective: "Ensure every active account has an accountable owner.",
+      evidence: "User access listing, employee listing, service account register",
+      procedures: ["Reconcile accounts to HR records", "Identify stale accounts", "Review service account ownership"],
+    },
+    {
+      requirement: "Access changes must retain approval evidence",
+      topic: "Change Management",
+      objective: "Ensure access granting and changes are authorized before use.",
+      evidence: "Access approval, ticket records, authority matrix",
+      procedures: ["Review approval completeness", "Compare approver to authority matrix", "Identify missing approval evidence"],
+    },
+  ],
+  "other-policy": [
+    {
+      requirement: "Controls must align with the selected internal policy or baseline",
+      topic: "System Configuration",
+      objective: "Assess control operation against the selected policy requirement.",
+      evidence: "Policy, procedure, configuration baseline, testing evidence",
+      procedures: ["Decompose policy requirement", "Map expected evidence", "Identify control gaps"],
+    },
+  ],
 };
 
 const demoRecords = {
@@ -273,8 +354,11 @@ function analyzeLocally(records, topic, standard) {
   const passed = total - exceptionCount;
   const passRate = total ? Math.round((passed / total) * 100) : 0;
   const framework = standard || "SCBX Group Standards and relevant good practices";
+  const complianceMatrix = state.approach === "compliance" ? buildComplianceMatrix(exceptions, rule, framework) : [];
   const narrative = total
-    ? `We reviewed ${total.toLocaleString("en-US")} ${rule.title} records and found that ${passed.toLocaleString("en-US")} records met the criteria, while ${exceptionCount.toLocaleString("en-US")} exceptions were identified, resulting in a ${passRate}% pass rate. The exceptions were not aligned with ${framework}, which requires that ${rule.criteria.toLowerCase()} The condition may have resulted from incomplete monitoring and control-review procedures. This increases the risk of unauthorized access, service disruption, or non-compliance with applicable requirements. Management should remediate the identified exceptions and strengthen ongoing monitoring.`
+    ? state.approach === "compliance"
+      ? `The assessment of ${framework} covered ${total.toLocaleString("en-US")} evidence records mapped to ${rule.title}. Based on the available evidence, ${passed.toLocaleString("en-US")} records met the control criteria and ${exceptionCount.toLocaleString("en-US")} records indicated compliance gaps or insufficient control performance. The draft conclusion is subject to auditor review, evidence validation, and management confirmation before finalization.`
+      : `We reviewed ${total.toLocaleString("en-US")} ${rule.title} records and found that ${passed.toLocaleString("en-US")} records met the criteria, while ${exceptionCount.toLocaleString("en-US")} exceptions were identified, resulting in a ${passRate}% pass rate. The exceptions were not aligned with ${framework}, which requires that ${rule.criteria.toLowerCase()} The condition may have resulted from incomplete monitoring and control-review procedures. This increases the risk of unauthorized access, service disruption, or non-compliance with applicable requirements. Management should remediate the identified exceptions and strengthen ongoing monitoring.`
     : "There is insufficient evidence to draft an audit finding. Import the relevant records before running the analysis.";
 
   return {
@@ -283,8 +367,34 @@ function analyzeLocally(records, topic, standard) {
     criteria: rule.criteria,
     summary: { total, passed, exceptions: exceptionCount, passRate },
     exceptions,
+    complianceMatrix,
     narrative,
   };
+}
+
+function buildComplianceMatrix(exceptions, rule, framework) {
+  const requirements = requirementLibrary[state.selection?.id] || requirementLibrary.scbx;
+  const hasTerminated = exceptions.some((item) => /terminated|resigned/i.test(item.issue));
+  const hasApprovalGap = exceptions.some((item) => /approval|privilege|excessive/i.test(item.issue));
+  const hasDormant = exceptions.some((item) => /dormant|inactive|stale/i.test(item.issue));
+  return requirements.map((requirement, index) => {
+    const gapSignals = [
+      hasTerminated && "terminated user access was identified",
+      hasApprovalGap && "approval or privilege evidence was incomplete",
+      hasDormant && "inactive or stale access was identified",
+    ].filter(Boolean);
+    const status = !exceptions.length ? "Compliant" : index === 0 ? "Partially Compliant" : gapSignals.length > 1 ? "Non-Compliant" : "Insufficient Evidence";
+    const gap = status === "Compliant"
+      ? "No exception noted from the sample evidence."
+      : `${framework} requirement needs follow-up because ${gapSignals.join(", ") || "supporting evidence was not complete"}.`;
+    return {
+      requirement: requirement.requirement,
+      topic: requirement.topic || rule.title,
+      evidence: requirement.evidence,
+      status,
+      gap,
+    };
+  });
 }
 
 const state = { step: 1, approach: null, selection: null, topic: null, standard: null, tab: "inputs", records: [], report: null };
@@ -301,7 +411,7 @@ function goToStep(step) {
     item.classList.toggle("clickable", position < step);
   });
   $$(".step-line").forEach((line, index) => line.classList.toggle("done", index + 1 < step));
-  $("#pageTitle").textContent = ["New audit", "Define audit scope", "Audit blueprint", "Evidence analysis"][step - 1];
+  $("#pageTitle").textContent = ["New audit", "Define audit scope", state.approach === "compliance" ? "Requirements breakdown" : "Audit blueprint", "Review and run testing", "Audit outputs"][step - 1];
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -331,16 +441,44 @@ function chooseSelection(id) {
   state.selection = item;
   state.topic = item.topic || item.id;
   state.standard = state.approach === "compliance" ? item.title : null;
-  $("#blueprintTitle").textContent = `${item.title} audit blueprint`;
+  $("#blueprintKicker").textContent = state.approach === "compliance" ? "REQUIREMENTS BREAKDOWN" : "AUDIT BLUEPRINT";
+  $("#blueprintTitle").textContent = state.approach === "compliance" ? `${item.title} requirements breakdown` : `${item.title} audit blueprint`;
+  $("#blueprintLead").textContent = state.approach === "compliance"
+    ? "Review the decomposed requirements, mapped audit topics, expected evidence, and planned procedures."
+    : "Review the plan below before importing your evidence.";
   $("#metaApproach").textContent = catalog[state.approach].label;
   $("#metaTopic").textContent = item.title;
   state.tab = "inputs";
   renderBlueprint();
+  renderRunPreview();
   goToStep(3);
 }
 
 function renderBlueprint() {
   const blueprint = blueprints[state.topic] || blueprints.access;
+  $(".blueprint-layout").classList.toggle("matrix-mode", state.approach === "compliance");
+  if (state.approach === "compliance") {
+    const requirements = requirementLibrary[state.selection.id] || requirementLibrary.scbx;
+    $("#blueprintContent").innerHTML = `
+      <h3>Requirement-to-control mapping</h3>
+      <p>AI decomposes the selected standard into assessable requirements and maps each one to audit topic, evidence, and executable procedures.</p>
+      <div class="table-wrap">
+        <table class="mapping-table">
+          <thead><tr><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>MAPPED PROCEDURES</th></tr></thead>
+          <tbody>
+            ${requirements.map((item) => `
+              <tr>
+                <td><strong>${escapeHtml(item.requirement)}</strong><small>${escapeHtml(item.objective)}</small></td>
+                <td>${escapeHtml(item.topic)}</td>
+                <td>${escapeHtml(item.evidence)}</td>
+                <td><ul>${item.procedures.map((procedure) => `<li>${escapeHtml(procedure)}</li>`).join("")}</ul></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+    return;
+  }
   $$(".blueprint-tabs button").forEach((button) => button.classList.toggle("active", button.dataset.tab === state.tab));
   const headings = {
     inputs: ["Evidence to prepare", "These items support a complete analysis and reduce follow-up requests."],
@@ -353,6 +491,24 @@ function renderBlueprint() {
     return;
   }
   $("#blueprintContent").innerHTML = `<h3>${title}</h3><p>${description}</p><ul class="check-list">${blueprint[state.tab].map(([name, detail, format]) => `<li><span>✓</span><div><strong>${name}</strong><small>${detail}</small></div><i>${format}</i></li>`).join("")}</ul>`;
+}
+
+function renderRunPreview() {
+  const blueprint = blueprints[state.topic] || blueprints.access;
+  const title = state.selection?.title || auditRules[state.topic]?.title || "Access Control";
+  const mode = catalog[state.approach]?.label || "Risk-based";
+  $("#runKicker").textContent = state.approach === "compliance" ? "UPLOAD COMPLIANCE EVIDENCE" : "UPLOAD AUDIT DATA FILES";
+  $("#runTitle").textContent = state.approach === "compliance" ? "Upload compliance evidence and run assessment" : "Upload audit data files";
+  $("#runLead").textContent = state.approach === "compliance"
+    ? "Upload the required evidence and review test procedures before starting the assessment."
+    : "Please provide the required data files for this audit and review the planned procedures.";
+  $("#runScopeTopic").textContent = title;
+  $("#runScopeMode").textContent = mode;
+  $("#runScopeData").textContent = state.records.length ? `${state.records.length.toLocaleString("en-US")} uploaded` : "Waiting for upload";
+  const requirements = state.approach === "compliance" ? (requirementLibrary[state.selection?.id] || requirementLibrary.scbx) : null;
+  const procedures = requirements ? requirements.flatMap((requirement) => requirement.procedures).slice(0, 5) : blueprint.procedures.map(([name]) => name);
+  $("#runProcedureList").innerHTML = procedures.map((procedure) => `<li>${escapeHtml(procedure)}</li>`).join("");
+  $$(".compliance-only").forEach((item) => item.hidden = state.approach !== "compliance");
 }
 
 function parseCsv(text) {
@@ -385,6 +541,7 @@ function setRecords(records, name, size = null) {
   $("#fileName").textContent = name;
   $("#fileMeta").textContent = `${size ?? `${records.length} sample records`} · Ready to analyze`;
   $("#recordCount").textContent = `${records.length.toLocaleString("en-US")} Records`;
+  renderRunPreview();
   $("#analyzeBar").hidden = false;
 }
 
@@ -405,6 +562,7 @@ function clearFile() {
   $("#dropzone").hidden = false;
   $("#fileReady").hidden = true;
   $("#analyzeBar").hidden = true;
+  renderRunPreview();
 }
 
 async function analyzeRecords() {
@@ -419,6 +577,7 @@ async function analyzeRecords() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     state.report = analyzeLocally(state.records, state.topic, state.standard);
     renderReport();
+    goToStep(5);
   } catch (error) {
     $("#uploadSection").hidden = false;
     $("#analyzeBar").hidden = false;
@@ -431,8 +590,11 @@ async function analyzeRecords() {
 
 function renderReport() {
   const report = state.report;
+  const isCompliance = state.approach === "compliance";
   $("#report").hidden = false;
-  $("#reportTopic").textContent = report.topic;
+  $("#reportKicker").textContent = isCompliance ? "COMPLIANCE RESULT" : "AUDIT RESULT";
+  $("#reportTitle").innerHTML = isCompliance ? "Compliance results" : `<span id="reportTopic"></span> audit results`;
+  if (!isCompliance) $("#reportTopic").textContent = report.topic;
   $("#reportTime").textContent = `Generated ${new Date(report.generatedAt).toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" })}`;
   $("#totalRecords").textContent = report.summary.total.toLocaleString("en-US");
   $("#passedRecords").textContent = report.summary.passed.toLocaleString("en-US");
@@ -444,6 +606,19 @@ function renderReport() {
   $("#exceptionTable").innerHTML = report.exceptions.length
     ? report.exceptions.map((item) => `<tr><td>#${String(item.row).padStart(3, "0")}</td><td>${escapeHtml(item.reference)}</td><td>${escapeHtml(item.issue)}</td><td><span class="risk-badge ${item.risk.toLowerCase()}">${item.risk}</span></td></tr>`).join("")
     : `<tr><td class="empty-table" colspan="4">No exceptions were identified in the tested records.</td></tr>`;
+  $("#complianceMatrixSection").hidden = !isCompliance;
+  $("#narrativeIndex").textContent = isCompliance ? "03" : "02";
+  if (isCompliance) {
+    $("#complianceTable").innerHTML = report.complianceMatrix.map((item) => `
+      <tr>
+        <td>${escapeHtml(item.requirement)}</td>
+        <td>${escapeHtml(item.topic)}</td>
+        <td>${escapeHtml(item.evidence)}</td>
+        <td><span class="status-badge ${item.status.toLowerCase().replaceAll(" ", "-")}">${escapeHtml(item.status)}</span></td>
+        <td>${escapeHtml(item.gap)}</td>
+      </tr>
+    `).join("");
+  }
   $("#narrativeText").textContent = report.narrative;
   $("#criteriaText").textContent = report.criteria;
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -465,6 +640,8 @@ function resetAnalysis() {
   $("#report").hidden = true;
   $("#uploadSection").hidden = false;
   clearFile();
+  renderRunPreview();
+  goToStep(4);
 }
 
 function showToast(message) {
@@ -479,10 +656,12 @@ function downloadReport() {
   if (!state.report) return;
   const report = state.report;
   const rows = report.exceptions.map((item) => `${item.row},${item.reference},"${item.issue.replaceAll('"', '""')}",${item.risk}`).join("\n");
-  const text = `SCBX IT AUDIT REPORT\n\nTopic: ${report.topic}\nTotal Records: ${report.summary.total}\nPassed: ${report.summary.passed}\nExceptions: ${report.summary.exceptions}\nPass Rate: ${report.summary.passRate}%\n\nAUDITOR NARRATIVE\n${report.narrative}\n\nEXCEPTIONS\nRow,Reference,Issue,Risk\n${rows}`;
+  const matrixRows = report.complianceMatrix?.map((item) => `${item.requirement},${item.topic},"${item.evidence.replaceAll('"', '""')}",${item.status},"${item.gap.replaceAll('"', '""')}"`).join("\n") || "";
+  const matrixSection = matrixRows ? `\n\nCOMPLIANCE MATRIX\nRequirement,Audit Topic,Evidence,Status,Gap / Observation\n${matrixRows}` : "";
+  const text = `SCBX IT AUDIT WORKPAPER DRAFT\n\nMode: ${catalog[state.approach]?.label || "Risk-based"}\nTopic / Standard: ${state.selection?.title || report.topic}\nTotal Records: ${report.summary.total}\nPassed: ${report.summary.passed}\nExceptions: ${report.summary.exceptions}\nPass Rate: ${report.summary.passRate}%\n\nAUDITOR NARRATIVE\n${report.narrative}\n\nEXCEPTIONS\nRow,Reference,Issue,Risk\n${rows}${matrixSection}\n\nHUMAN REVIEW NOTE\nThis is a draft generated for auditor review, challenge, override, and finalization.`;
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob(["\uFEFF" + text], { type: "text/plain;charset=utf-8" }));
-  link.download = `SCBX_Audit_Report_${new Date().toISOString().slice(0, 10)}.txt`;
+  link.download = `SCBX_Audit_Workpaper_${new Date().toISOString().slice(0, 10)}.txt`;
   link.click();
   URL.revokeObjectURL(link.href);
 }
@@ -501,11 +680,34 @@ function downloadExceptionRegister() {
   showToast("Exception register downloaded.");
 }
 
+function buildComplianceCsv(report) {
+  const headers = ["Requirement", "Audit Topic", "Evidence", "Status", "Gap / Observation"];
+  const rows = report.complianceMatrix.map((item) => [item.requirement, item.topic, item.evidence, item.status, item.gap]);
+  return [headers, ...rows].map((row) => row.map((value) => {
+    let text = String(value ?? "");
+    if (/^[=+\-@]/.test(text)) text = `'${text}`;
+    return `"${text.replaceAll('"', '""')}"`;
+  }).join(",")).join("\r\n");
+}
+
+function downloadComplianceMatrix() {
+  if (!state.report?.complianceMatrix?.length) {
+    showToast("No compliance matrix is available to download.");
+    return;
+  }
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob(["\uFEFF" + buildComplianceCsv(state.report)], { type: "text/csv;charset=utf-8" }));
+  link.download = `SCBX_Compliance_Matrix_${state.selection?.id || "assessment"}_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  showToast("Compliance matrix downloaded.");
+}
+
 $$(".approach-card").forEach((card) => card.addEventListener("click", () => chooseApproach(card.dataset.approach)));
 $$("[data-back]").forEach((button) => button.addEventListener("click", () => goToStep(Number(button.dataset.back))));
 $$(".blueprint-tabs button").forEach((button) => button.addEventListener("click", () => { state.tab = button.dataset.tab; renderBlueprint(); }));
 $$(".step").forEach((button) => button.addEventListener("click", () => { const target = Number(button.dataset.step); if (target < state.step) goToStep(target); }));
-$("#continueToUpload").addEventListener("click", () => goToStep(4));
+$("#continueToUpload").addEventListener("click", () => { renderRunPreview(); goToStep(4); });
 $("#chooseFile").addEventListener("click", () => $("#fileInput").click());
 $("#fileInput").addEventListener("change", (event) => handleFile(event.target.files[0]));
 $("#removeFile").addEventListener("click", clearFile);
@@ -515,6 +717,10 @@ $("#newAuditButton").addEventListener("click", resetAudit);
 $("#resetAnalysis").addEventListener("click", resetAnalysis);
 $("#downloadReport").addEventListener("click", downloadReport);
 $("#downloadExceptions").addEventListener("click", downloadExceptionRegister);
+$("#downloadComplianceMatrix").addEventListener("click", downloadComplianceMatrix);
+$("#markReviewed").addEventListener("click", () => showToast("Marked as reviewed for auditor follow-up."));
+$("#overrideClassification").addEventListener("click", () => showToast("Override captured as a prototype action."));
+$("#finalizeWorkpaper").addEventListener("click", () => showToast("Workpaper finalized as draft output."));
 $("#recommendButton")?.addEventListener("click", () => { showToast("Risk-based is recommended for exploring priority risks."); setTimeout(() => chooseApproach("risk"), 650); });
 $("#copyNarrative").addEventListener("click", async () => {
   await navigator.clipboard.writeText(state.report?.narrative || "");

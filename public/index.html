@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SCBX intelligent IT internal audit workspace." />
     <title>SCBX | IT Audit Intelligence</title>
-    <link rel="stylesheet" href="./styles.css?v=20260615-2" />
+    <link rel="stylesheet" href="./styles.css?v=20260618-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -50,13 +50,16 @@
             <div class="step-line"></div>
             <button class="step" data-step="3"><span>3</span><div><small>STEP 03</small><strong>Prepare data</strong></div></button>
             <div class="step-line"></div>
-            <button class="step" data-step="4"><span>4</span><div><small>STEP 04</small><strong>Analyze results</strong></div></button>
+            <button class="step" data-step="4"><span>4</span><div><small>STEP 04</small><strong>Run testing</strong></div></button>
+            <div class="step-line"></div>
+            <button class="step" data-step="5"><span>5</span><div><small>STEP 05</small><strong>Review outputs</strong></div></button>
           </div>
 
           <div id="stageContainer">
             <section class="stage-panel active" data-stage="1">
               <div class="hero-copy">
-                <h2>How would you like to<br /><em>approach this audit?</em></h2>
+                <h2>Select Audit<br /><em>Assessment Mode</em></h2>
+                <p>Choose how you would like to start this audit assessment.</p>
               </div>
               <div class="approach-grid">
                 <button class="approach-card" data-approach="risk">
@@ -76,6 +79,10 @@
                   <span class="card-cta">Choose this approach <b>→</b></span>
                 </button>
               </div>
+              <div class="engagement-form" aria-label="Engagement details">
+                <label>Engagement Name <input id="engagementName" type="text" placeholder="e.g. User Access Review Q2" /></label>
+                <label>Audit Period <input id="auditPeriod" type="text" placeholder="e.g. Jan 2026 - Jun 2026" /></label>
+              </div>
               </section>
 
             <section class="stage-panel" data-stage="2">
@@ -88,7 +95,7 @@
 
             <section class="stage-panel" data-stage="3">
               <div class="stage-heading">
-                <div><span class="section-kicker">AUDIT BLUEPRINT</span><h2 id="blueprintTitle">Audit blueprint</h2><p>Review the plan below before importing your evidence.</p></div>
+                <div><span class="section-kicker" id="blueprintKicker">AUDIT BLUEPRINT</span><h2 id="blueprintTitle">Audit blueprint</h2><p id="blueprintLead">Review the plan below before importing your evidence.</p></div>
                 <button class="text-button" data-back="2">← Change topic</button>
               </div>
               <div class="blueprint-meta">
@@ -104,13 +111,43 @@
                 </div>
                 <div class="blueprint-content" id="blueprintContent"></div>
               </div>
-              <div class="stage-actions"><button class="primary-button" id="continueToUpload">Import evidence <span>→</span></button></div>
+              <div class="stage-actions"><button class="primary-button" id="continueToUpload">Continue <span>→</span></button></div>
             </section>
 
             <section class="stage-panel" data-stage="4">
               <div class="stage-heading">
-                <div><span class="section-kicker">EVIDENCE ANALYSIS</span><h2>Import evidence and analyze results</h2><p>Upload a CSV file with column headers. Every record will be tested against the selected criteria.</p></div>
+                <div><span class="section-kicker" id="runKicker">UPLOAD EVIDENCE</span><h2 id="runTitle">Upload evidence and run testing</h2><p id="runLead">Upload a CSV file with column headers. Every record will be tested against the selected criteria.</p></div>
                 <button class="text-button" data-back="3">← View audit blueprint</button>
+              </div>
+
+              <div class="process-tabs" aria-label="Testing workflow">
+                <span class="active">Inputs</span>
+                <i>›</i>
+                <span>AI Processing</span>
+                <i>›</i>
+                <span>Outputs</span>
+              </div>
+
+              <div class="run-preview">
+                <section>
+                  <h3>Scope</h3>
+                  <dl>
+                    <div><dt>Audit Topic</dt><dd id="runScopeTopic">Access Control</dd></div>
+                    <div><dt>Mode</dt><dd id="runScopeMode">Risk-based</dd></div>
+                    <div><dt>Data</dt><dd id="runScopeData">Waiting for upload</dd></div>
+                  </dl>
+                </section>
+                <section>
+                  <h3>Planned Testing Procedures</h3>
+                  <ul id="runProcedureList"></ul>
+                </section>
+                <section>
+                  <h3>Generate Outputs</h3>
+                  <label><input type="checkbox" checked /> Draft audit narrative</label>
+                  <label><input type="checkbox" checked /> Exception summary</label>
+                  <label><input type="checkbox" checked /> Exportable data file</label>
+                  <label class="compliance-only"><input type="checkbox" checked /> Compliance matrix</label>
+                </section>
               </div>
 
               <div class="analysis-grid" id="uploadSection">
@@ -147,11 +184,13 @@
                 <h3>Reviewing your evidence</h3>
                 <p id="loadingText">Checking data completeness...</p>
               </div>
+            </section>
 
+            <section class="stage-panel" data-stage="5">
               <div class="report" id="report" hidden>
                 <div class="report-header">
-                  <div><span class="section-kicker">AUDIT RESULT</span><h2><span id="reportTopic"></span> audit results</h2><p id="reportTime"></p></div>
-                  <div class="report-actions"><button class="secondary-button" id="resetAnalysis">Run another analysis</button><button class="primary-button" id="downloadReport">Download report ↓</button></div>
+                  <div><span class="section-kicker" id="reportKicker">AUDIT RESULT</span><h2 id="reportTitle"><span id="reportTopic"></span> audit results</h2><p id="reportTime"></p></div>
+                  <div class="report-actions"><button class="secondary-button" id="resetAnalysis">Run another analysis</button><button class="primary-button" id="downloadReport">Generate workpaper ↓</button></div>
                 </div>
                 <div class="summary-grid">
                   <article class="summary-card dark"><small>TOTAL RECORDS</small><strong id="totalRecords">0</strong><span>Complete audit population</span></article>
@@ -176,14 +215,33 @@
                   </div>
                 </section>
 
+                <section class="report-section" id="complianceMatrixSection" hidden>
+                  <div class="report-section-title">
+                    <div><span>02</span><h3>Compliance matrix<small>Requirement-by-requirement assessment</small></h3></div>
+                    <button class="table-filter" id="downloadComplianceMatrix">Download CSV ↓</button>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead><tr><th>REQUIREMENT</th><th>AUDIT TOPIC</th><th>EVIDENCE</th><th>STATUS</th><th>GAP / OBSERVATION</th></tr></thead>
+                      <tbody id="complianceTable"></tbody>
+                    </table>
+                  </div>
+                </section>
+
                 <section class="report-section narrative-section">
-                  <div class="report-section-title"><div><span>02</span><h3>Auditor narrative<small>Draft finding ready for auditor review</small></h3></div><button class="copy-button" id="copyNarrative">Copy narrative</button></div>
+                  <div class="report-section-title"><div><span id="narrativeIndex">02</span><h3>Auditor narrative<small>Draft finding ready for auditor review</small></h3></div><button class="copy-button" id="copyNarrative">Copy narrative</button></div>
                   <div class="narrative-box">
                     <span class="quote-mark">“</span>
                     <p id="narrativeText"></p>
                   </div>
                   <div class="criteria-note"><strong>Assessment criteria</strong><p id="criteriaText"></p></div>
                 </section>
+                <div class="human-review">
+                  <span>Human-in-the-loop review</span>
+                  <button class="secondary-button" id="markReviewed">Mark reviewed</button>
+                  <button class="secondary-button" id="overrideClassification">Override classification</button>
+                  <button class="primary-button" id="finalizeWorkpaper">Finalize</button>
+                </div>
               </div>
             </section>
           </div>
@@ -191,6 +249,6 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status"></div>
-    <script type="module" src="./app.js?v=20260615-3"></script>
+    <script type="module" src="./app.js?v=20260618-1"></script>
   </body>
 </html>
