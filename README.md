@@ -10,8 +10,9 @@ An interactive IT internal audit prototype that guides auditors from approach se
 - Executive summaries, exception registers, and auditor narratives
 - Responsive desktop and mobile interface
 - GitHub Pages deployment with no backend dependency
+- Local Gradio production workspace with regulation upload, PDF/text extraction, evidence testing, and downloadable workpapers
 
-## Run locally
+## Run the static prototype locally
 
 Open PowerShell in the project directory and run:
 
@@ -39,11 +40,35 @@ USR-002,active,terminated,yes,14
 
 The **Use sample data** button provides a complete demo without uploading a file.
 
+## Run the production-local Gradio app
+
+Use this mode for local production-style testing where regulation and evidence files stay on your machine.
+
+```powershell
+.\run_gradio.ps1
+```
+
+Then open `http://127.0.0.1:7860`.
+
+The Gradio app supports:
+
+- Risk-based audit topic selection with mapped SCBX Group Standards references
+- Compliance-based assessment using SCBX, BOT, internal security standards, or uploaded regulation files
+- Regulation upload for `PDF`, `TXT`, `MD`, `CSV`, `LOG`, `XLSX`, and `XLS`
+- Evidence upload for `CSV`, `XLSX`, `XLS`, `JSON`, `TXT`, and `LOG`
+- Local deterministic testing with executive summary, exception register, compliance matrix, and auditor narrative
+- Downloadable workpaper, exception register CSV, compliance matrix CSV, and session JSON
+
+Generated export files are written to your local temporary folder under `scbx_it_audit_exports`.
+
 ## Project structure
 
 - `public/` static GitHub Pages application and client-side audit engine
+- `app.py` local Gradio production app
+- `requirements-gradio.txt` Python dependencies for the Gradio app
+- `run_gradio.ps1` Windows runner that creates a local virtual environment and starts Gradio
 - `server.mjs` optional local Node.js server and API
 - `.github/workflows/pages.yml` GitHub Pages deployment workflow
 - `Dockerfile` optional container deployment
 
-The prototype uses deterministic audit rules so record totals and exceptions remain traceable. AI model integration, SSO, a database, and an approved control library can be connected in a production phase.
+The prototype and Gradio app use deterministic audit rules so record totals and exceptions remain traceable. AI model integration, SSO, a database, and an approved control library can be connected in a later enterprise production phase.

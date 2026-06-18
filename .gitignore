@@ -1,5 +1,7 @@
 node_modules/
 .tools/
+.venv-gradio/
+__pycache__/
 *.log
 *.zip
 .env
