@@ -136,26 +136,76 @@ const blueprints = {
 };
 
 const controlReferences = {
+  governance: [
+    { source: "Technology Risk Management Standard", file: "SCBX-Group_Technology-Risk-Management-Standard-2.pdf", reference: "TRM-GOV", requirement: "Technology risk governance, roles, control oversight, and reporting must be established and maintained.", procedures: ["Review technology risk governance structure and assigned ownership.", "Verify risk reporting, committee oversight, and evidence of management review.", "Check exceptions or waivers are assessed, approved, and tracked."] },
+    { source: "Cybersecurity and Technology Risk Awareness Standard", file: "SCBX-Group_Cybersecurity-and-Technology-Risk-Awareness-Standard-1.pdf", reference: "CTRA-AWARE", requirement: "Personnel must receive awareness and training relevant to cybersecurity and technology risk responsibilities.", procedures: ["Review training scope, target population, and completion evidence.", "Identify overdue or missing awareness completion for in-scope users."] },
+  ],
+  "risk-management": [
+    { source: "Technology Risk Management Standard", file: "SCBX-Group_Technology-Risk-Management-Standard-2.pdf", reference: "TRM-RISK", requirement: "Technology risks must be identified, assessed, monitored, and reported in line with assigned risk exposure tier.", procedures: ["Review technology risk assessment records and risk treatment plans.", "Validate status of risk actions and overdue remediation items.", "Check risk acceptance or waiver approvals and review frequency."] },
+  ],
+  asset: [
+    { source: "IT Asset Management Standard", file: "SCBX-Group_IT-Asset-Management-Standard.pdf", reference: "ITAM", requirement: "IT assets must be inventoried, owned, classified, maintained, and controlled throughout the asset lifecycle.", procedures: ["Reconcile asset inventory with source systems and ownership records.", "Review missing owner, status, classification, or lifecycle information.", "Check asset disposal or transfer evidence for completeness."] },
+  ],
+  security: [
+    { source: "Data Security and Encryption Standard", file: "SCBX-Group_Data-Security-and-Encryption-Standard-1.pdf", reference: "DSE", requirement: "Sensitive data must be protected according to classification, encryption, transmission, and handling requirements.", procedures: ["Review data classification and encryption evidence for in-scope systems.", "Check whether sensitive data storage and transmission controls are documented.", "Identify missing evidence for encryption, masking, or data handling controls."] },
+    { source: "Network Security Standard", file: "SCBX-Group_Network-Security-Standard-1.pdf", reference: "NETSEC", requirement: "Network security controls must restrict, monitor, and protect connectivity according to approved architecture.", procedures: ["Review network segmentation and firewall rule evidence.", "Identify overly permissive connectivity or missing rule owner information."] },
+  ],
   access: [
-    { source: "SCBX Group Standards", reference: "SCBX-AC-01", requirement: "User access must be approved, appropriate, and removed promptly when no longer required." },
-    { source: "BOT Requirements", reference: "BOT-IT-AC-01", requirement: "Access rights for critical systems must be controlled in line with risk and business need." },
-    { source: "ISO/IEC 27001:2022", reference: "A.5.15 / A.5.18", requirement: "Access control and access rights must be managed throughout the user lifecycle." },
+    { source: "Identity and Access Management Standard", file: "SCBX-Group_Identity-and-Access-Management-Standard_v1.0.pdf", reference: "IAM", requirement: "User and privileged access must be requested, approved, reviewed, and removed in line with the access lifecycle.", procedures: ["Reconcile active accounts against HR employee status.", "Verify access request and approval evidence for sampled users.", "Identify terminated, dormant, privileged, or unapproved accounts.", "Check periodic access review evidence and follow-up actions."] },
+    { source: "Cloud Security Standard", file: "SCBX-Group_Cloud-Security-Standard.pdf", reference: "CLOUD-AC", requirement: "Cloud portal, administrative, and provider access must follow least privilege, MFA, and periodic entitlement review requirements.", procedures: ["Review cloud administrative access and MFA evidence.", "Verify entitlement review evidence for provider or cloud system users."] },
+  ],
+  physical: [
+    { source: "Physical and Environmental Security Standard", file: "SCBX-Group_Physical-and-Environmental-Security-Standard.pdf", reference: "PES", requirement: "Physical facilities and environmental controls must protect technology areas from unauthorized access, damage, or service disruption.", procedures: ["Review physical access list and authorization evidence for restricted areas.", "Check visitor, badge, CCTV, and environmental monitoring evidence.", "Identify terminated users or vendors with active facility access."] },
+  ],
+  communications: [
+    { source: "Network Security Standard", file: "SCBX-Group_Network-Security-Standard-1.pdf", reference: "NETSEC", requirement: "Network communication paths must be controlled through approved architecture, segmentation, firewall, and secure connectivity controls.", procedures: ["Review approved network diagrams and firewall rule baselines.", "Identify open, unused, or unauthorized network rules.", "Check remote access and encrypted channel requirements."] },
+  ],
+  change: [
+    { source: "Change Management Standard", file: "SCBX-Change-Management-Standard.pdf", reference: "CHG", requirement: "Changes must be recorded, assessed, approved, tested, implemented, and reviewed according to change governance.", procedures: ["Reconcile change tickets with deployment or release evidence.", "Verify risk assessment, approval, testing, and rollback evidence.", "Identify emergency or failed changes without post-implementation review."] },
+    { source: "Release and Deployment Management Standard", file: "SCBX-Release-and-Deployment-Management-Standard-1.pdf", reference: "REL", requirement: "Release and deployment activities must be planned, authorized, tested, and supported by implementation evidence.", procedures: ["Review release package completeness and deployment approval.", "Check deployment result, rollback, and communication evidence."] },
   ],
   configuration: [
-    { source: "SCBX Group Standards", reference: "SCBX-CM-01", requirement: "System configuration and production changes must be approved, tested, and traceable." },
-    { source: "ISO/IEC 27001:2022", reference: "A.8.9 / A.8.32", requirement: "Configuration management and change management controls must be defined and operated." },
+    { source: "Configuration Management Standard", file: "SCBX-Configuration-Management-Standard.pdf", reference: "CFG", requirement: "Configuration items and baselines must be identified, controlled, recorded, and maintained.", procedures: ["Compare configuration records against approved baseline requirements.", "Identify unsupported baseline deviations or missing configuration ownership.", "Review evidence of configuration updates and review cadence."] },
+    { source: "Cloud Architecture Standard", file: "SCBX-Group_Cloud-Architecture-Standard.pdf", reference: "CLOUD-ARCH", requirement: "Cloud architecture must align with approved design, control, resilience, and governance requirements.", procedures: ["Review cloud architecture approval and design evidence.", "Check deviations from approved architecture or landing-zone standards."] },
+  ],
+  logging: [
+    { source: "Logging and Auditing Standard", file: "SCBX-Group_Logging-and-Auditing-Standard-1.pdf", reference: "LOG", requirement: "Security and system logs must be generated, retained, protected, monitored, and available for investigation.", procedures: ["Review log source coverage and integration with centralized logging.", "Check log retention, protection, and review evidence.", "Identify critical systems without required logging or monitoring."] },
+  ],
+  capacity: [
+    { source: "Capacity Management Standard", file: "SCBX-Capacity-Management-Standard.pdf", reference: "CAP", requirement: "Capacity and performance must be monitored, analyzed, forecasted, and planned to meet current and future service demand.", procedures: ["Review capacity monitoring metrics and service performance thresholds.", "Check capacity plans, forecasts, and approval evidence.", "Identify services with repeated threshold breaches or missing capacity plan."] },
+  ],
+  monitoring: [
+    { source: "Logging and Auditing Standard", file: "SCBX-Group_Logging-and-Auditing-Standard-1.pdf", reference: "LOG-MON", requirement: "Events and logs must support monitoring, detection, and investigation of security or operational incidents.", procedures: ["Review alert rules, monitoring coverage, and escalation evidence.", "Identify critical events without alerting, triage, or investigation evidence."] },
+    { source: "Security Incident Response and Management Standard", file: "SCBX-Group_Security-Incident-Response-and-Management-Standard-1.pdf", reference: "SIRM", requirement: "Security incidents must be detected, reported, escalated, investigated, and closed with appropriate actions.", procedures: ["Sample alerts and verify incident escalation and closure evidence."] },
+  ],
+  vulnerability: [
+    { source: "Security Remediation and Patch Management Standard", file: "SCBX-Group_Security-Remediation-and-Patch-Management-Standard.pdf", reference: "SRPM", requirement: "Vulnerabilities must be identified, prioritized, remediated, verified, and tracked to closure.", procedures: ["Reconcile vulnerability scan results with remediation status.", "Calculate aging against severity-based remediation expectations.", "Identify overdue vulnerabilities and failed remediation evidence."] },
   ],
   backup: [
-    { source: "SCBX Group Standards", reference: "SCBX-BC-02", requirement: "Critical data must be backed up and restoration must be tested periodically." },
-    { source: "ISO/IEC 27001:2022", reference: "A.8.13", requirement: "Information, software, and systems must be backed up and tested regularly." },
+    { source: "Cloud Security Standard", file: "SCBX-Group_Cloud-Security-Standard.pdf", reference: "CLOUD-AVAIL", requirement: "Backup copies, recovery procedures, backup access governance, restoration logs, and encryption must be maintained for protected data.", procedures: ["Review backup job status and failed or missed backup evidence.", "Verify backup encryption, access controls, and recovery procedure evidence.", "Check restoration logs and restore-test results for sampled systems."] },
+    { source: "Capacity Management Standard", file: "SCBX-Capacity-Management-Standard.pdf", reference: "CAP-DR", requirement: "Disaster recovery must be adopted where required to support business continuity and reduce service disruption risk.", procedures: ["Review DR or recovery planning linkage for critical services."] },
   ],
   patch: [
-    { source: "SCBX Group Standards", reference: "SCBX-VM-01", requirement: "Vulnerabilities must be remediated within risk-based service levels." },
-    { source: "CIS Controls v8", reference: "Control 7", requirement: "Continuous vulnerability management must identify and remediate weaknesses." },
+    { source: "Security Remediation and Patch Management Standard", file: "SCBX-Group_Security-Remediation-and-Patch-Management-Standard.pdf", reference: "SRPM", requirement: "Security patches and remediation must be prioritized, implemented, verified, and monitored based on risk.", procedures: ["Review patch deployment status by asset and severity.", "Identify overdue critical or high remediation items.", "Check evidence of remediation validation or rescanning."] },
+  ],
+  endpoint: [
+    { source: "Endpoint and Device Security Standard", file: "SCBX-Group_Endpoint-and-Device-Security-Standard-1.pdf", reference: "ENDPOINT", requirement: "Endpoints and devices must be securely configured, protected, monitored, and managed throughout their lifecycle.", procedures: ["Review endpoint inventory and protection agent coverage.", "Identify unmanaged, non-compliant, or outdated devices.", "Check endpoint encryption, anti-malware, and configuration compliance evidence."] },
+  ],
+  development: [
+    { source: "Secure Application Development Standard", file: "SCBX-Group_Secure-Application-Development-Standard.pdf", reference: "SAD", requirement: "Applications must follow secure development, testing, vulnerability remediation, and release control requirements.", procedures: ["Review secure SDLC evidence, security testing, and remediation records.", "Check code review, vulnerability scan, and approval evidence before release.", "Identify open high-risk findings at deployment."] },
   ],
   incident: [
-    { source: "SCBX Group Standards", reference: "SCBX-IR-01", requirement: "Security and IT incidents must be logged, escalated, resolved, and supported by root-cause analysis." },
-    { source: "ISO/IEC 27001:2022", reference: "A.5.24 / A.5.26", requirement: "Information security incidents must be planned for, responded to, and learned from." },
+    { source: "Security Incident Response and Management Standard", file: "SCBX-Group_Security-Incident-Response-and-Management-Standard-1.pdf", reference: "SIRM", requirement: "Security incidents must be reported, triaged, escalated, investigated, and remediated.", procedures: ["Review incident register completeness and severity classification.", "Compare response and resolution timestamps against SLA expectations.", "Verify root cause, corrective action, and closure evidence."] },
+    { source: "Incident Management Standard", file: "SCBX-Incident-Management-standard-1.pdf", reference: "INC", requirement: "IT incidents must be managed to restore normal service operation and minimize business impact.", procedures: ["Review incident categorization, assignment, resolution, and closure evidence."] },
+    { source: "Problem Management Standard", file: "SCBX-Problem-Management-Standard-1.pdf", reference: "PRB", requirement: "Recurring or significant incidents must be analyzed through problem management to identify root cause and preventive actions.", procedures: ["Identify recurring incidents and verify problem records or RCA evidence."] },
+  ],
+  "third-party": [
+    { source: "IT Third Party Risk Management Standard", file: "SCBX-Group_IT-Third-Party-Risk-Management-Standard-1.pdf", reference: "TPRM", requirement: "IT third-party risks must be assessed, contracted, monitored, and reviewed throughout the supplier lifecycle.", procedures: ["Review third-party risk assessment and due diligence evidence.", "Check contract clauses, ongoing monitoring, and issue remediation records.", "Identify vendors missing risk profile, review, or security evidence."] },
+    { source: "Cloud Security Standard", file: "SCBX-Group_Cloud-Security-Standard.pdf", reference: "CLOUD-TP", requirement: "Cloud service provider contracts, control responsibilities, certifications, and monitoring evidence must be maintained.", procedures: ["Review cloud provider contract, certification, and SOC report evidence where applicable."] },
+  ],
+  project: [
+    { source: "IT Project Management Standard", file: "SCBX-Group_IT_Project_Management_Standard-2.pdf", reference: "ITPM", requirement: "IT projects must be governed through approved scope, risk, schedule, deliverable, testing, and closure controls.", procedures: ["Review project approval, governance, risk, and status reporting evidence.", "Check testing, implementation, sign-off, and closure artifacts.", "Identify overdue milestones or missing approval gates."] },
+    { source: "Portfolio Management Standard", file: "SCBX-Portfolio-Management-Standard-1.pdf", reference: "PORT", requirement: "Portfolio governance must support prioritization, oversight, and benefit/risk visibility across initiatives.", procedures: ["Review portfolio prioritization and steering evidence for in-scope initiatives."] },
   ],
 };
 
@@ -450,9 +500,19 @@ function getActiveReferences(topic = state.topic) {
       reference: item.reference,
       source: item.source,
       requirement: item.requirement,
+      procedures: item.procedures,
     }));
   }
-  return controlReferences[topic] || controlReferences.access;
+  return controlReferences[state.selection?.id] || controlReferences[topic] || controlReferences.access;
+}
+
+function getActiveProcedures() {
+  const seen = new Set();
+  return getActiveReferences().flatMap((item) => item.procedures || []).filter((procedure) => {
+    if (seen.has(procedure)) return false;
+    seen.add(procedure);
+    return true;
+  });
 }
 
 const state = { step: 1, approach: null, selection: null, topic: null, standard: null, tab: "inputs", records: [], report: null };
@@ -547,7 +607,8 @@ function renderBlueprint() {
   };
   const [title, description] = headings[state.tab];
   if (state.tab === "procedures") {
-    $("#blueprintContent").innerHTML = `<h3>${title}</h3><p>${description}</p><ol class="procedure-list">${blueprint.procedures.map(([name, detail]) => `<li><strong>${name}</strong>${detail}</li>`).join("")}</ol>`;
+    const procedures = getActiveProcedures();
+    $("#blueprintContent").innerHTML = `<h3>${title}</h3><p>${description}</p><ol class="procedure-list">${procedures.map((procedure) => `<li><strong>${escapeHtml(procedure)}</strong><span>Mapped from SCBX Group Standards reference criteria.</span></li>`).join("")}</ol>`;
     return;
   }
   if (state.tab === "references") {
@@ -569,8 +630,7 @@ function renderRunPreview() {
   $("#runScopeTopic").textContent = title;
   $("#runScopeMode").textContent = mode;
   $("#runScopeData").textContent = state.records.length ? `${state.records.length.toLocaleString("en-US")} uploaded` : "Waiting for upload";
-  const requirements = state.approach === "compliance" ? (requirementLibrary[state.selection?.id] || requirementLibrary.scbx) : null;
-  const procedures = requirements ? requirements.flatMap((requirement) => requirement.procedures).slice(0, 5) : blueprint.procedures.map(([name]) => name);
+  const procedures = getActiveProcedures().slice(0, 6);
   $("#runProcedureList").innerHTML = procedures.map((procedure) => `<li>${escapeHtml(procedure)}</li>`).join("");
   $("#runReferenceList").innerHTML = getActiveReferences().map((item) => `<li><span class="reference-chip">${escapeHtml(item.reference)}</span><strong>${escapeHtml(item.source)}</strong><small>${escapeHtml(item.requirement)}</small></li>`).join("");
   $$(".compliance-only").forEach((item) => item.hidden = state.approach !== "compliance");
